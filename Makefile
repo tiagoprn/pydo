@@ -142,3 +142,10 @@ dev-runserver: migrate  ## Run flask development server
 
 dev-runworker: clean migrate  ## Run a development celery worker
 	@python celery_worker.py worker --loglevel=DEBUG --pool=solo --queues=$(PROJECT_NAME)-default,$(PROJECT_NAME)-high-priority
+
+dev-setup-pgcli:  ## install pgcli globally (using uv)
+	@echo 'This will install pgcli (postgres CLI client) globally.'
+	@uv tool install pgcli@latest
+
+dev-pgcli:  ## run pgcli (postgres CLI client)
+	@pgcli postgres://postgres:postgres@0.0.0.0:5432/pydo

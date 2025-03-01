@@ -5,11 +5,6 @@
 - [-] Create the README with the cookiecutter instructions to develop on the project
 - [-] Data Layer
     - [-] database models
-        - [ ] cli to access the database:
-            - [ ] install pgcli (using `uv tool` if it is a python app)
-            - [ ] configure pgcli
-            - [ ] run pgcli and inspect the database
-            - [ ] Makefile: add command to run pgcli
         - [ ] create and run tests:
             - [ ] User model hashing functions:
                 - [ ] set_password
@@ -37,6 +32,9 @@
 - [ ] Dockerize (update Dockerfile)
 - [ ] revise the README.md once more
 - [ ] use "git-secret": migrate `.env.JWT_SECRET_KEY` to there
+- [ ] CI pipeline (github actions):
+    - [ ] ruff lint/format check
+    - [ ] tests (with coverage report)
 - [ ] deploy to a VPS ? (if I have time)
 - [ ] adhere to Clean Architecture principles, including separation of concerns and independence of components.
 
@@ -44,6 +42,11 @@
 
 - [-] Data Layer
     - [-] database models
+        - [x] cli to access the database:
+            - [x] install pgcli (using `uv tool` if it is a python app)
+            - [x] configure pgcli
+            - [x] run pgcli and inspect the database
+            - [x] Makefile: add command to run pgcli
         - [x] create (details: `ARCHITECTURE.md`)
         - [x] on `Task.status`, make the choices deterministic
         - [x] delete the migrations generated from the cookiecutter

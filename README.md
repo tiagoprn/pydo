@@ -156,3 +156,25 @@ Then, check the api documentation:
 
 `$ make dev-api-docs`
 
+## etc
+
+### pgcli
+
+You can interact with the postgresql database (making queries) using a cli util called 'pgcli'. It provides some features like autocomplete and others.
+
+To install it (uses uv):
+
+``` bash
+
+$ make dev-setup-pgcli
+
+```
+
+To connect to the database (using pgcli):
+
+``` bash
+
+$ make dev-pgcli
+
+```
+
