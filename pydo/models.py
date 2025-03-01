@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 from uuid import uuid4
 
 from sqlalchemy import Enum
@@ -21,12 +22,24 @@ class User(db.Model):
 
     tasks = db.relationship("Task", backref="user", lazy=True)
 
-    def set_password(self, password: str):
-        self.password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
-        self.last_updated_at = datetime.utcnow()
+    def hash(self, password: str) -> object:
+        return bcrypt.generate_password_hash(password).decode("utf-8")
 
     def check_password(self, password: str) -> bool:
         return bcrypt.check_password_hash(self.password_hash, password)
+
+    def register(self, username: str, email: str, password: str) -> 'User':
+        hashed_password = self.hash(password)
+        new_user = User(username=username, email=email, password_hash=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
+        db.session.refresh(new_user)
+        return new_user
+
+    def update(self, uuid: str, email: str='', password: str=''):
+        ...  # TODO:
+        self.last_updated_at = datetime.utcnow()
+
 
 
 class Task(db.Model):
@@ -43,3 +56,6 @@ class Task(db.Model):
     last_updated_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     user_uuid = db.Column(UUID(as_uuid=True), db.ForeignKey("user.uuid"), nullable=False)
+
+    def filter_by(self, user_uuid: str, status: List[str], due_date: datetime):
+        ...  # TODO:
