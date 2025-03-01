@@ -5,18 +5,22 @@
 - [-] Create the README with the cookiecutter instructions to develop on the project
 - [-] Data Layer
     - [ ] create the database models
+
+### NEXT
+
 - [ ] Check how to integrate JWT authentication
     - [ ] Which library to use?
     - [ ] ARCHITECTURE.md: Document how it will work
 - [ ] API Layer
+    - [ ] Maybe do not use any library to make the API RESTful, because this will lock the app into a library.
+          (maybe create a `use_cases` module to do the operations on the models)
+    - [ ] ARCHITECTURE.md: Document how it will work
 - [ ] Background Tasks Layer
     - [ ] send an e-mail when a new task is created
-
-### NEXT
-
-- [ ] Challenges (investigate how I can implement the following)
-    - [ ] API Layer
-        - [ ] Check if there is the need to use a specific package to make the models RESTful (check the requirements if it is not already there)
+        - [ ] create a `services` module to abstract the notification backend (start with e-mail)
+            - [ ] Abstract class "Notification" with Abstract method "notify"
+                - [ ] Derive an "E-mail notification" class from this one
+    - [ ] ARCHITECTURE.md: Document how it will work
 - [ ] seed the database with some tasks
 - [ ] Dockerize (update Dockerfile)
 - [ ] revise the README.md once more
