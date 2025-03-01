@@ -4,7 +4,16 @@
 
 - [-] Create the README with the cookiecutter instructions to develop on the project
 - [-] Data Layer
-    - [-] create the database models
+    - [-] database models
+        - [x] create (details: `ARCHITECTURE.md`)
+        - [ ] delete the migrations generated from the cookiecutter
+        - [ ] delete the containers generated from the cookiecutter
+        - [ ] start new containers
+        - [ ] create the migration
+        - [ ] run the migration
+        - [ ] create and run tests to the User model hashing functions
+            - [ ] set_password
+            - [ ] check_password
 
 ### NEXT
 

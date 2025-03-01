@@ -2,19 +2,39 @@ from datetime import datetime
 from uuid import uuid4
 
 from sqlalchemy.dialects.postgresql import UUID
-from pydo.extensions import db
+from pydo.extensions import db, bcrypt
+
+"""
+Available datatypes:
+https://docs.sqlalchemy.org/en/13/core/type_basics.html
+"""
 
 
-class SampleModel(db.Model):
-    """
-    Available datatypes:
-    https://docs.sqlalchemy.org/en/13/core/type_basics.html
-    """
-
+class User(db.Model):
     uuid = db.Column(UUID(as_uuid=True), default=uuid4, primary_key=True)
-    created_at = db.Column(
-        db.DateTime, nullable=False, default=datetime.now(), index=True
-    )
-    name = db.Column(db.String(255), nullable=False, index=True)
-    value = db.Column(db.Float, nullable=False)
-    extra_info = db.Column(db.Text, nullable=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    tasks = db.relationship("Task", backref="user", lazy=True)
+
+    def set_password(self, password: str):
+        self.password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
+        self.last_updated_at = datetime.utcnow()
+
+    def check_password(self, password: str) -> bool:
+        return bcrypt.check_password_hash(self.password_hash, password)
+
+
+class Task(db.Model):
+    uuid = db.Column(UUID(as_uuid=True), default=uuid4, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    status = db.Column(db.String(20), default="pending")  # pending, in_progress, completed
+    due_date = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)

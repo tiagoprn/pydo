@@ -19,17 +19,17 @@ If I have time to improve it, then it can be refactored with some concepts of cl
 ### Database tables
 
 - user:
-    id
+    uuid
     username
     email
     password_hash (will need `flask-bcrypt` python lib)
-    create_at
-    update_at
+    created_at
+    last_updated_at
     tasks (backref)
 
 
 - task:
-    id
+    uuid
     title
     description
     status (created, in_progress, completed, archived, deleted)
