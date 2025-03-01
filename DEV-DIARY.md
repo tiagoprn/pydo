@@ -21,6 +21,7 @@
         - [ ] ARCHITECTURE.md: Document how it will work
     - [ ] Maybe do not use any library to make the API RESTful, because this will lock the app into a library.
           (maybe create a `use_cases` module to do the operations on the models)
+    - [ ] implement rate limiting
     - [ ] ARCHITECTURE.md: Document how it will work
 - [ ] Background Tasks Layer
     - [ ] send an e-mail when a new task is created

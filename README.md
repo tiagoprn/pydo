@@ -17,39 +17,41 @@ The API allow users to:
 
 ## Features
 
-- Uses Python 3.13 and Flask (3.1) as the framework.
+- Python 3.13 and Flask (3.1) as the framework.
+
+- `uv` for packaging (requirements, additional tooling)
 
 - JWT authentication.
+
+- `bcrypt` for password hashing
 
 - CRUD endpoints for managing tasks, with:
     - Pagination for listing tasks.
     - Filtering tasks by status and due date.
 
-- Uses PostgreSQL as the database (containerized - docker or podman), with SQLAlchemy as the abstraction layer
+- Uses `PostgreSQL` as the database (containerized - docker or podman), with SQLAlchemy as the abstraction layer
 
-- pytest for unit tests, with some plugins to ease presentation.
+- `pytest` for unit tests, with some plugins to ease presentation.
 
 - tests coverage report (80% test coverage minimum)
 
-- Provides a Dockerfile and docker-compose.yml to set up the app and database locally:
+- Provides a `Dockerfile` and `docker-compose.yml` to set up the app and database locally:
     - docker/podman image generation (properly tagged)
     - docker-compose configured with the app required infrastructure (rabbitmq as celery broker, postgresql as the database)
 
-- API documentation using Flasgger (Swagger wrapper) as documentation for the API, using doctrings on the API endpoints to write the documentation.
+- API documentation using `Flasgger` (`Swagger` wrapper) as documentation for the API, using doctrings on the API endpoints to write the documentation.
 
 - Rate limiting to prevent API abuse.
 
-- Background task processing using Celery with RabbitMQ as the broker
+- Background task processing using `Celery` with `RabbitMQ` as the broker
 
-- Makefile to wrap the most common operations and ease project management, with commands to run the development server, shell, etc...
+- `Makefile` to wrap the most common operations and ease project management, with commands to run the development server, shell, etc...
 
-- gunicorn configured to run the project in the production environment.
+- `gunicorn` configured to run the project in the production environment.
 
-- adheres to Clean Architecture principles, including separation of concerns and independence of components.
+- code style and quality: `ruff` as the linter and formatter (customized with `pyproject.toml`)
 
-- code style and quality: ruff as the linter and formatter (customized with `pyproject.toml`)
-
-- environment variables for configuration.
+- environment variables for configuration (`.env` file)
 
 
 ## Run Locally
