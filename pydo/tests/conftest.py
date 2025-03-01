@@ -15,7 +15,26 @@ def client(app):
 
 @pytest.fixture
 def db_session(app):
+    """
+    Provides a test database session wrapped in an outer transaction.
+
+    This fixture creates all tables and opens a new database connection that starts a single,
+    "outer" transaction for the duration of each test. Think of this outer transaction as a
+    container that collects every change made during the test. Even if your code calls commit(),
+    the changes remain inside this container. At the end of the test, the entire container is
+    rolled back, ensuring that no changes persist in the database.
+    """
     with app.app_context():
         db.create_all()
-        yield db.session
-        db.session.rollback()  # Clean up after each test
+        connection = db.engine.connect()
+        transaction = connection.begin()
+
+        from sqlalchemy.orm import scoped_session, sessionmaker
+        session = scoped_session(sessionmaker(bind=connection))
+        db.session = session
+
+        yield session
+
+        transaction.rollback()
+        connection.close()
+        session.remove()

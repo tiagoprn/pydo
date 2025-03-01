@@ -17,7 +17,14 @@ class TestUserModel:
     def test_register_user_with_hashed_password_must_be_successful(self, db_session):
         new_user = self.create_user()
         assert new_user.uuid
+        print(new_user.uuid)
         assert new_user.password_hash != self.user_data['password']
+
+    def test_get_by_uuid_must_be_successful(self, db_session):
+        new_user = self.create_user()
+        assert new_user.uuid
+        print(new_user.uuid)
+        # TODO: make the assertion
 
     def test_update_user(db_session):
         ...
