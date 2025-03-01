@@ -4,7 +4,7 @@
 
 - [-] Create the README with the cookiecutter instructions to develop on the project
 - [-] Data Layer
-    - [ ] create the database models
+    - [-] create the database models
 
 ### NEXT
 
@@ -24,13 +24,15 @@
 - [ ] seed the database with some tasks
 - [ ] Dockerize (update Dockerfile)
 - [ ] revise the README.md once more
+- [ ] use "git-secret": migrate `.env.JWT_SECRET_KEY` to there
 - [ ] deploy to a VPS ? (if I have time)
 - [ ] adhere to Clean Architecture principles, including separation of concerns and independence of components.
 
 ### DID
 
 - [-] Data Layer
-    - [x] add bcrypt to requirements.in to allow hashing/encryption
+    - [x] setup `bcrypt` as an app extension
+    - [x] add bcrypt to requirements.in to allow hashing
         - [x] cleanup the previous requirements.in (has pylint and black which I do not use on this solution)
         - [x] re-generate the requirements.txt taking into consideration the cleaned up requirements.in
         - [x] create a new .venv, activate it and run the test suite to make sure all is great.

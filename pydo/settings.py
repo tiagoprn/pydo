@@ -94,3 +94,5 @@ TASKS_QUEUES = {
     'pydo.tasks.compute': {'queue': 'compute'},
     'pydo.tasks.generate_random_string': {'queue': 'generate_random_string'},
 }
+
+JWT_SECRET_KEY = config('JWT_SECRET_KEY', cast=str)
