@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Union
 from uuid import uuid4
 
 from sqlalchemy import Enum
@@ -35,6 +35,16 @@ class User(db.Model):
         db.session.commit()
         db.session.refresh(new_user)
         return new_user
+
+    @staticmethod
+    def get_by(uuid: str='', email: str='', username: str='') -> Union[None, "User"]:
+        if uuid:
+            return User.query.filter_by(uuid=uuid).first()
+        if email:
+            return User.query.filter_by(email=email).first()
+        if username:
+            return User.query.filter_by(username=username).first()
+        return None
 
     def update(self, uuid: str, email: str='', password: str=''):
         ...  # TODO:

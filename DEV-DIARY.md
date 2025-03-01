@@ -5,12 +5,11 @@
 - [-] Create the README with the cookiecutter instructions to develop on the project
 - [-] Data Layer
     - [-] database models
-        - [ ] create and run tests:
-            - [ ] User model hashing functions:
-                - [ ] set_password
-                - [ ] check_password
+        - [-] create and run tests:
+            - [-] User model methods
             - [ ] Task model:
                 - [ ] status values (valid, invalid)
+        - [ ] create a new User using flask shell (to validate the app factory and the extensions)
 
 ### NEXT
 
@@ -33,6 +32,7 @@
 - [ ] Dockerize (update Dockerfile)
 - [ ] revise the README.md once more
 - [ ] use "git-secret": migrate `.env.JWT_SECRET_KEY` to there
+- [ ] pre-commit hook (install `pre-commit` through `uv` and put command on the `Makefile` to do that)
 - [ ] CI pipeline (github actions):
     - [ ] ruff lint/format check
     - [ ] tests (with coverage report)
