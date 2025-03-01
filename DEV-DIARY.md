@@ -6,7 +6,6 @@
 - [-] Data Layer
     - [-] database models
         - [-] create and run tests:
-            - [-] User model methods
             - [ ] Task model:
                 - [ ] status values (valid, invalid)
         - [ ] create a new User using flask shell (to validate the app factory and the extensions)
@@ -14,6 +13,7 @@
 ### NEXT
 
 - [ ] Makefile: add command to run `flask shell` on the project
+- [ ] tests: test the coverage report (`Makefile` command)
 - [ ] API Layer
     - [ ] Check how to integrate JWT authentication
         - [ ] Which library to use?
@@ -43,6 +43,8 @@
 
 - [-] Data Layer
     - [-] database models
+        - [-] create and run tests:
+            - [x] User model methods
         - [x] cli to access the database:
             - [x] install pgcli (using `uv tool` if it is a python app)
             - [x] configure pgcli

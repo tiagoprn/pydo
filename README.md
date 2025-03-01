@@ -164,6 +164,14 @@ Then, check the api documentation:
 
 ## etc
 
+### run a specific test with pytest
+
+``` bash
+
+$ pytest -s -k 'test_models' -vvv
+
+```
+
 ### pgcli
 
 You can interact with the postgresql database (making queries) using a cli util called 'pgcli'. It provides some features like autocomplete and others.
