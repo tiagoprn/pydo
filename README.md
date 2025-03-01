@@ -110,8 +110,8 @@ $ make dev-setup-ruff
 This will install ruff globally, but do not worry. It needs to be explicitly called and you can customize its' behavior per project if you need.
 
 ``` bash
-$ make style && make style-autofix && make style
-$ make lint && make lint-autofix && make lint
+$ make style; make style-autofix && make style
+$ make lint; make lint-autofix && make lint
 ```
 
 - Run the test suite:

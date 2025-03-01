@@ -1,13 +1,9 @@
 import os
 
 from flask import Flask
-from pydo.extensions import (
-    init_celery,
-    init_db,
-    init_swagger
-)
+from pydo.extensions import init_celery, init_db, init_swagger
 
-PKG_NAME = os.path.dirname(os.path.realpath(__file__)).split("/")[-1]
+PKG_NAME = os.path.dirname(os.path.realpath(__file__)).split('/')[-1]
 
 
 # pylint: disable=import-outside-toplevel

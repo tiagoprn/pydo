@@ -8,7 +8,7 @@ client = app.test_client()
 def test_compute_sent_to_queue():
     response = client.get('/compute')
     assert response.status_code == 200
-    assert response.json == {"message": "Successfully sent to queue."}
+    assert response.json == {'message': 'Successfully sent to queue.'}
 
 
 def test_404():

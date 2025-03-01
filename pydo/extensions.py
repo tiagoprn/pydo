@@ -70,7 +70,8 @@ def init_db(app):
     app.config['SQLALCHEMY_DATABASE_URI'] = settings.SQLALCHEMY_DATABASE_URI
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
+
     # models must be imported here so that the migrations app detect them
-    from pydo.models import SampleModel
+    from pydo.models import SampleModel  # noqa
 
     migrate.init_app(app, db)

@@ -25,9 +25,7 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'root': {'level': LOG_LEVEL, 'handlers': ['console']},
-    'formatters': {
-        'default': {'format': log_format, 'datefmt': '%Y%m%d.%H%M%S'}
-    },
+    'formatters': {'default': {'format': log_format, 'datefmt': '%Y%m%d.%H%M%S'}},
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
@@ -51,9 +49,9 @@ LOGGING = {
     },
 }
 if JSON_LOGS:
-    LOGGING['formatters']['default'][
-        'class'
-    ] = 'pythonjsonlogger.jsonlogger.JsonFormatter'
+    LOGGING['formatters']['default']['class'] = (
+        'pythonjsonlogger.jsonlogger.JsonFormatter'
+    )
 
 logging.config.dictConfig(LOGGING)
 
@@ -94,7 +92,5 @@ QUEUE_PASSWORD = config('QUEUE_PASSWORD', cast=str)
 DEFAULT_QUEUE_NAME = config('DEFAULT_QUEUE_NAME', cast=str)
 TASKS_QUEUES = {
     'pydo.tasks.compute': {'queue': 'compute'},
-    'pydo.tasks.generate_random_string': {
-        'queue': 'generate_random_string'
-    },
+    'pydo.tasks.generate_random_string': {'queue': 'generate_random_string'},
 }

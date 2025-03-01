@@ -9,9 +9,11 @@ THREADS = WORKERS * 2
 
 # Gunicorn configuration file.
 
+
 def get_timeout():
     # Below you could configure through decouple e.g.
     return 60
+
 
 #
 # Server socket
@@ -192,20 +194,26 @@ proc_name = None
 #       A callable that takes a server instance as the sole argument.
 #
 
+
 def post_fork(server, worker):
-    server.log.info("Worker spawned (pid: %s)", worker.pid)
+    server.log.info('Worker spawned (pid: %s)', worker.pid)
+
 
 def pre_fork(server, worker):
     pass
 
+
 def pre_exec(server):
-    server.log.info("Forked child, re-executing.")
+    server.log.info('Forked child, re-executing.')
+
 
 def when_ready(server):
-    server.log.info("Server is ready. Spawning workers")
+    server.log.info('Server is ready. Spawning workers')
+
 
 def worker_int(worker):
-    worker.log.info("worker received INT or QUIT signal")
+    worker.log.info('worker received INT or QUIT signal')
+
 
 def worker_abort(worker):
-    worker.log.info("worker received SIGABRT signal")
+    worker.log.info('worker received SIGABRT signal')
