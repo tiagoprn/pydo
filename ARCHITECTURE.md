@@ -6,10 +6,34 @@ It also leverages JWT for authentication (with refresh tokens).
 
 I will start with the simplest architecture possible:
 
-1) API Layer (Flask)
-2) Data Layer (PostgreSQL)
+1) Data Layer (PostgreSQL)
+2) API Layer (Flask)
 3) Background Processing Layer (RabbitMQ with workers)
 
 This architecture is simple and effective for a task management API with background processing.
 
 If I have time to improve it, then it can be refactored with some concepts of clean/hexagonal architecture.
+
+## Data Layer
+
+### Database tables
+
+- user:
+    id
+    username
+    email
+    password_hash (will need `flask-bcrypt` python lib)
+    create_at
+    update_at
+    tasks (backref)
+
+
+- task:
+    id
+    title
+    description
+    status (created, in_progress, completed, archived, deleted)
+    due_date
+    created_at
+    last_updated_at
+    user_id (FK)
