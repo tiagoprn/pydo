@@ -19,7 +19,7 @@ def init_swagger(app):
 
 def init_bcrypt(app):
     app.config['JWT_SECRET_KEY'] = settings.JWT_SECRET_KEY
-    print(f">>>>>>>> JWT_SECRET_KEY={app.config['JWT_SECRET_KEY']}")
+    # print(f">>>>>>>> JWT_SECRET_KEY={app.config['JWT_SECRET_KEY']}")
     bcrypt.init_app(app)
 
 def init_celery(app):

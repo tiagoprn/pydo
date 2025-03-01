@@ -29,8 +29,7 @@ class User(db.Model):
         return bcrypt.check_password_hash(self.password_hash, password)
 
     def register(self, username: str, email: str, password: str) -> 'User':
-        hashed_password = self.hash(password)
-        new_user = User(username=username, email=email, password_hash=hashed_password)
+        new_user = User(username=username, email=email, password_hash=self.hash(password))
         db.session.add(new_user)
         db.session.commit()
         db.session.refresh(new_user)
@@ -46,10 +45,20 @@ class User(db.Model):
             return User.query.filter_by(username=username).first()
         return None
 
-    def update(self, uuid: str, email: str='', password: str=''):
-        ...  # TODO:
-        self.last_updated_at = datetime.utcnow()
+    def update(self, email: str='', password: str=''):
+        if (not email) and (not password):
+            return self
 
+        if email:
+            self.email = email
+
+        if password:
+            self.password_hash = self.hash(password)
+
+        self.last_updated_at = datetime.utcnow()
+        db.session.add(self)
+        db.session.commit()
+        db.session.refresh(self)
 
 
 class Task(db.Model):
