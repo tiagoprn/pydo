@@ -15,9 +15,13 @@ The API allow users to:
 - Mark tasks as completed.
 - Filter tasks based on status and due date.
 
-## Features
+## Architecture
 
-- Python 3.13 and Flask (3.1) as the framework.
+See [this](ARCHITECTURE.md)
+
+## Technologies
+
+- `Python` 3.13 and `Flask` (3.1) as the web API framework.
 
 - `uv` for packaging (requirements, additional tooling)
 
@@ -29,7 +33,7 @@ The API allow users to:
     - Pagination for listing tasks.
     - Filtering tasks by status and due date.
 
-- Uses `PostgreSQL` as the database (containerized - docker or podman), with SQLAlchemy as the abstraction layer
+- Uses `PostgreSQL` as the database (containerized - `docker` or `podman`), with `SQLAlchemy` as the abstraction layer
 
 - `pytest` for unit tests, with some plugins to ease presentation.
 
