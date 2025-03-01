@@ -1,6 +1,7 @@
 from datetime import datetime
 from uuid import uuid4
 
+from sqlalchemy import Enum
 from sqlalchemy.dialects.postgresql import UUID
 from pydo.extensions import db, bcrypt
 
@@ -32,9 +33,13 @@ class Task(db.Model):
     uuid = db.Column(UUID(as_uuid=True), default=uuid4, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=True)
-    status = db.Column(db.String(20), default="pending")  # pending, in_progress, completed
+    status = db.Column(
+        Enum('pending', 'in_progress', 'completed', name='task_status_enum'),
+        default='pending',
+        nullable=False,
+    )
     due_date = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_updated_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    user_uuid = db.Column(UUID(as_uuid=True), db.ForeignKey("user.uuid"), nullable=False)

@@ -5,22 +5,25 @@
 - [-] Create the README with the cookiecutter instructions to develop on the project
 - [-] Data Layer
     - [-] database models
-        - [x] create (details: `ARCHITECTURE.md`)
-        - [ ] delete the migrations generated from the cookiecutter
-        - [ ] delete the containers generated from the cookiecutter
-        - [ ] start new containers
-        - [ ] create the migration
-        - [ ] run the migration
-        - [ ] create and run tests to the User model hashing functions
-            - [ ] set_password
-            - [ ] check_password
+        - [ ] cli to access the database:
+            - [ ] install pgcli (using `uv tool` if it is a python app)
+            - [ ] configure pgcli
+            - [ ] run pgcli and inspect the database
+            - [ ] Makefile: add command to run pgcli
+        - [ ] create and run tests:
+            - [ ] User model hashing functions:
+                - [ ] set_password
+                - [ ] check_password
+            - [ ] Task model:
+                - [ ] status values (valid, invalid)
 
 ### NEXT
 
-- [ ] Check how to integrate JWT authentication
-    - [ ] Which library to use?
-    - [ ] ARCHITECTURE.md: Document how it will work
+- [ ] Makefile: add command to run `flask shell` on the project
 - [ ] API Layer
+    - [ ] Check how to integrate JWT authentication
+        - [ ] Which library to use?
+        - [ ] ARCHITECTURE.md: Document how it will work
     - [ ] Maybe do not use any library to make the API RESTful, because this will lock the app into a library.
           (maybe create a `use_cases` module to do the operations on the models)
     - [ ] ARCHITECTURE.md: Document how it will work
@@ -30,7 +33,7 @@
             - [ ] Abstract class "Notification" with Abstract method "notify"
                 - [ ] Derive an "E-mail notification" class from this one
     - [ ] ARCHITECTURE.md: Document how it will work
-- [ ] seed the database with some tasks
+- [ ] populate the database with some tasks - using a `flask shell` script; add command to the Makefile
 - [ ] Dockerize (update Dockerfile)
 - [ ] revise the README.md once more
 - [ ] use "git-secret": migrate `.env.JWT_SECRET_KEY` to there
@@ -40,6 +43,16 @@
 ### DID
 
 - [-] Data Layer
+    - [-] database models
+        - [x] create (details: `ARCHITECTURE.md`)
+        - [x] on `Task.status`, make the choices deterministic
+        - [x] delete the migrations generated from the cookiecutter
+        - [x] delete the containers generated from the cookiecutter
+        - [x] start new containers
+        - [x] create the migration
+        - [x] run the migration
+        - [x] run dev webserver
+        - [x] run dev worker
     - [x] setup `bcrypt` as an app extension
     - [x] add bcrypt to requirements.in to allow hashing
         - [x] cleanup the previous requirements.in (has pylint and black which I do not use on this solution)

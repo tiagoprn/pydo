@@ -79,6 +79,6 @@ def init_db(app):
     db.init_app(app)
 
     # models must be imported here so that the migrations app detect them
-    from pydo.models import SampleModel  # noqa
+    from pydo.models import User, Task  # noqa
 
     migrate.init_app(app, db)
