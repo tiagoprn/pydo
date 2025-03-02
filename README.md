@@ -67,6 +67,12 @@ See [this](ARCHITECTURE.md)
 
 - Audit trail for changes on user/task tables
 
+- implement rate limiting
+
+- populate the database with some tasks - using a `flask shell` script; add command to the Makefile
+
+- pre-commit hook (install `pre-commit` through `uv` and put command on the `Makefile` to do that)
+
 - Use "git-secret": migrate `.env.JWT_SECRET_KEY` to there
 
 - CI pipeline (github actions):
