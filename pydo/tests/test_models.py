@@ -145,10 +145,9 @@ class TestTaskModel():
         tasks_uuids = create_tasks(user=new_user)
         print(f'tasks_uuids={tasks_uuids}')
         assert len(tasks_uuids) == 2
-        for task_uuid in tasks_uuids:
-            total_created = len(Task.filter_by(uuids=[task_uuid]))
-            is_created = total_created == 1
-            assert is_created
+
+        created_tasks = Task.filter_by(uuids=tasks_uuids)
+        assert len(created_tasks) == 2
 
     def test_do_not_create_task_with_invalid_status(self, db_session):
         new_user = create_user()

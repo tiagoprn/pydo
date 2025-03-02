@@ -113,21 +113,55 @@ class Task(db.Model):
         db.session.refresh(self)
 
     @staticmethod
-    def filter_by(user_uuids: List[str]=[], uuids: List[str]=[], status: List[str]=[], due_date: datetime=None):
+    def filter_by(user_uuids: List[str]=[], uuids: List[str]=[], status: List[str]=[],
+                  start_due_date: datetime=None, end_due_date: datetime=None) -> List["Task"]:
+        """
+        Filter tasks based on various criteria.
+
+        This method builds a query with multiple filters:
+        - For single values of user_uuid and uuid, uses filter_by for exact matching
+        - For multiple values of user_uuid, uuid, and status, uses filter with .in_() operator
+        - For date ranges, applies comparison operators on due_date
+        - Validates status values against allowed options
+
+        The filtering strategy combines SQLAlchemy's filter_by() for simple equality conditions
+        and filter() for more complex conditions like lists and ranges.
+        """
         filters_data = {}
 
-        if user_uuids:
-            filters_data['user_uuid'] = user_uuids[0]  # TODO: support list of user_uuids
+        # Handle simple equality filters
+        if user_uuids and len(user_uuids) == 1:
+            filters_data['user_uuid'] = user_uuids[0]
 
-        if uuids:
-            filters_data['uuid'] = uuids[0]  # TODO: support list of uuids
+        if uuids and len(uuids) == 1:
+            filters_data['uuid'] = uuids[0]
 
+        # Validate status values
+        valid_statuses = ['pending', 'in_progress', 'completed']
         if status:
-            filters_data['status'] = status
+            invalid_statuses = [s for s in status if s not in valid_statuses]
+            if invalid_statuses:
+                raise ValueError(f"Invalid status values: {invalid_statuses}. "
+                                f"Allowed values are: {valid_statuses}")
 
-        if due_date:
-            filters_data['due_date'] = due_date  # TODO: add start_due_date & end_due_date
+            if len(status) == 1:
+                filters_data['status'] = status[0]
 
-        print(f'>>>>>> filters: {filters_data}')
+        # Start with basic query and add complex filters
+        query = Task.query.filter_by(**filters_data)
 
-        return Task.query.filter_by(**filters_data).all()
+        if user_uuids and len(user_uuids) > 1:
+            query = query.filter(Task.user_uuid.in_(user_uuids))
+
+        if uuids and len(uuids) > 1:
+            query = query.filter(Task.uuid.in_(uuids))
+
+        if status and len(status) > 1:
+            query = query.filter(Task.status.in_(status))
+
+        if start_due_date:
+            query = query.filter(Task.due_date >= start_due_date)
+        if end_due_date:
+            query = query.filter(Task.due_date <= end_due_date)
+
+        return query.all()
