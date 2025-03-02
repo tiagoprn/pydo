@@ -237,10 +237,28 @@ def get_user():
 @api_blueprint.route("/user", methods=["PATCH"])
 @jwt_required()
 def update_user():
-    ...  # TODO: implement
+    """
+    Update user info
+    ---
+    parameters:
+      - name: email
+        type: string
+        required: false
+      - name: password
+        type: string
+        required: false
+    responses:
+      200:
+        description: updated user info
+    """
+    user_uuid = get_jwt_identity()
 
+    data = request.get_json()
+    user = User.get_by(uuid=user_uuid)
 
-@api_blueprint.route("/user", methods=["DELETE"])
-@jwt_required()
-def delete_user():
-    ...  # TODO: implement
+    email = data.get('email')
+    password = data.get('password')
+    user.update(email=email, password=password)
+
+    password_value = 'SUCCESSFULLY CHANGED' if password else 'NOT CHANGED'
+    return jsonify({"uuid": str(user.uuid), "email": user.email, "password": password_value}), 200

@@ -59,9 +59,15 @@ See [this](ARCHITECTURE.md)
 
 ## Potential enhancements
 
-- Use "git-secret": migrate `.env.JWT_SECRET_KEY` to there
+- `PATCH /user`: implement current password confirmation and new password confirmation (2nd time to check their are equal)
+
+- implement user removal
+
+- RBAC implementation (an admin user could create new users, update other users information, etc...)
 
 - Audit trail for changes on user/task tables
+
+- Use "git-secret": migrate `.env.JWT_SECRET_KEY` to there
 
 - CI pipeline (github actions):
     - ruff lint/format check

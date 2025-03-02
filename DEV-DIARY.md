@@ -2,17 +2,17 @@
 
 ### DOING
 
-- [-] Create the README with the cookiecutter instructions to develop on the project
 - [-] API Layer
-    - [x] Check how to integrate JWT authentication
-        - [x] Which library to use?
-        - [x] ARCHITECTURE.md: Document how it will work
-    - [ ] Add `flask-jwt-extended` to requirements and update the `uv venv`
-    - [ ] Implement the JWT endpoints
-    - [ ] Maybe do not use any library to make the API RESTful, because this will lock the app into a library.
-          (maybe create a `use_cases` module to do the operations on the models)
-    - [ ] implement rate limiting
-    - [ ] ARCHITECTURE.md: Document how it will work
+    - [-] Implement remaining endpoints:
+        - [-] task
+            - [ ] post
+            - [ ] patch
+            - [ ] delete
+            - [ ] get
+                - [ ] single
+                - [ ] with filter
+    - [ ] Manually test interacting with the API on swagger (make sure everything is working)
+        - [ ] Update the docs with the link to access swagger API
 
 ### NEXT
 
@@ -24,12 +24,23 @@
     - [ ] ARCHITECTURE.md: Document how it will work
 - [ ] tests: test the coverage report (`Makefile` command)
 - [ ] populate the database with some tasks - using a `flask shell` script; add command to the Makefile
+- [ ] implement rate limiting
+- [ ] review ARCHITECTURE.md once more
+- [ ] review the README.md once more
 - [ ] Dockerize (update Dockerfile)
-- [ ] revise the README.md once more
 - [ ] pre-commit hook (install `pre-commit` through `uv` and put command on the `Makefile` to do that)
 
 ### DID
 
+- [-] API Layer
+    - [-] Implement remaining endpoints:
+        - [x] user
+            - [x] patch
+    - [x] Implement the JWT endpoints
+    - [x] Add `flask-jwt-extended` to requirements and update the `uv venv`
+    - [x] Check how to integrate JWT authentication
+        - [x] Which library to use?
+        - [x] ARCHITECTURE.md: Document how it will work
 - [x] Data Layer
     - [x] database models
         - [x] Task model methods

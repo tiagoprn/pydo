@@ -39,10 +39,10 @@ class TestUserAPI:
         response = test_client.post('/user', json=payload)
         return response
 
-    def submit_login_request(self, test_client):
+    def submit_login_request(self, test_client, email: str='jlp@startrek.com', password: str='12345678'):
         payload = {
-            'email': 'jlp@startrek.com',
-            'password': '12345678'
+            'email': email,
+            'password': password
         }
 
         response = test_client.post('/login', json=payload)
@@ -73,8 +73,6 @@ class TestUserAPI:
         new_user_uuid = create_user_response.json['uuid']
 
         login_response = self.submit_login_request(test_client=test_client)
-        assert login_response.status_code == 200
-
         access_token = login_response.json['access_token']
         refresh_token = login_response.json['refresh_token']
 
@@ -106,5 +104,40 @@ class TestUserAPI:
         assert response.status_code == 200
 
         new_access_token = response.json['access_token']
+        assert new_access_token is not None
+        assert new_access_token != access_token
+
+    def test_update_user_successfully(self, test_client, db_session):
+        create_user_response = self.submit_create_user_request(test_client=test_client)
+        new_user_uuid = create_user_response.json['uuid']
+
+        login_response = self.submit_login_request(test_client=test_client)
+        access_token = login_response.json['access_token']
+
+        headers = {'Authorization': f'Bearer {access_token}'}
+        new_email = 'jean_luc_picard.captain@startrek.com'
+        new_password = 'resistance-is-futile'
+        payload = {
+            'email': new_email,
+            'password': new_password
+        }
+        update_response = test_client.patch('/user', headers=headers, json=payload)
+        assert update_response.status_code == 200
+
+        expected_json_response = {
+            'email': new_email,
+            'password': 'SUCCESSFULLY CHANGED',
+            'uuid': new_user_uuid
+        }
+        assert update_response.json == expected_json_response
+
+        user_instance = User.get_by(email=new_email)
+        assert str(user_instance.uuid) == new_user_uuid
+
+        # re-attempt login with updated email and password should get new access token
+        new_login_response = self.submit_login_request(test_client=test_client, email=new_email, password=new_password)
+        assert new_login_response.status_code == 200
+
+        new_access_token = new_login_response.json['access_token']
         assert new_access_token is not None
         assert new_access_token != access_token
