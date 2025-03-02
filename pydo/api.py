@@ -413,3 +413,59 @@ def delete_task():
         return '', 204
 
     return jsonify({'message': 'could not delete task (non-existing or error during deletion)'}), 400
+
+@api_blueprint.route("/task", methods=["GET"])
+@jwt_required()
+def get_one_task():
+    """
+    Get one task
+    ---
+    parameters:
+      - name: uuid
+        type: string
+        required: true
+    responses:
+      200:
+        description: success
+    """
+    user_uuid = get_jwt_identity()
+    user = User.get_by(uuid=user_uuid)
+
+    data = request.get_json()
+    task_uuid = data.get('uuid')
+
+    task_instance = Task().filter_by(uuids=[task_uuid], user_uuids=[user_uuid])[0]
+
+    task_data = {
+        'uuid': task_instance.uuid,
+        'title': task_instance.title,
+        'description': task_instance.description,
+        'status': task_instance.status,
+        'due_date': task_instance.due_date.isoformat(),
+        'created_at': task_instance.created_at.isoformat(),
+        'last_updated_at': task_instance.last_updated_at.isoformat()
+    }
+    return jsonify(task_data), 200
+
+
+@api_blueprint.route("/tasks", methods=["GET"])
+@jwt_required()
+def get_many_tasks():
+    """
+    Get many tasks
+    ---
+    parameters:
+      - name: uuid
+        type: string
+        required: true
+    responses:
+      200:
+        description: successfully deleted
+    """
+    user_uuid = get_jwt_identity()
+    user = User.get_by(uuid=user_uuid)
+
+    data = request.get_json()
+    task_uuid = data.get('uuid')
+
+    # TODO: implement, with filters support

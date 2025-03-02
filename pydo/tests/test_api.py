@@ -259,3 +259,36 @@ class TestTaskAPI():
         response = test_client.delete('/task', headers=request_headers, json=payload)
         assert response.status_code == 204
         assert response.text == ''
+
+    def test_get_task_successfully_through_api(self, test_client, db_session):
+        user_info = self.create_user_and_login(test_client=test_client, db_session=db_session)
+        user_uuid = user_info['user_uuid']
+        request_headers = user_info['request_headers']
+
+        create_payload = {
+            'user_uuid': user_uuid,
+            'title': 'Study for the test',
+            'description': 'Mathematics 101',
+            'due_date': '2025-03-31 11:00'
+        }
+        create_response = test_client.post('/task', headers=request_headers, json=create_payload)
+        assert create_response.status_code == 201
+
+        payload = {
+            'uuid': create_response.json['uuid'],
+        }
+        get_response = test_client.get('/task', headers=request_headers, json=payload)
+        assert get_response.status_code == 200
+
+        response_data = get_response.json
+
+        expected_response = {
+            'uuid': create_response.json['uuid'],
+            'description': 'Mathematics 101',
+            'due_date': '2025-03-31T11:00:00',
+            'status': 'pending',
+            'title': 'Study for the test',
+        }
+        assert response_data.pop('created_at') is not None
+        assert response_data.pop('last_updated_at') is not None
+        assert response_data == expected_response

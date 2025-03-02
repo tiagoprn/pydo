@@ -1,21 +1,17 @@
-## 2025-03-02
+## 2025-03-03
 
-### DOING
+### NEXT
 
 - [-] API Layer
     - [-] Implement remaining endpoints:
         - [-] task
-            - [ ] get
-                - [ ] single
+            - [-] get
                 - [ ] all
                     - [ ] without filter
                     - [ ] with filter
                     - [ ] implement pagination on the API layer (customizable on .env; 3 per page for testing purposes)
     - [ ] Manually test interacting with the API on swagger (make sure everything is working)
         - [ ] Update the docs with the link to access swagger API
-
-### NEXT
-
 - [ ] Background Tasks Layer
     - [ ] send an e-mail when a new task is created
         - [ ] create a `services` module to abstract the notification backend (start with e-mail)
@@ -30,11 +26,15 @@
 - [ ] Dockerize (update Dockerfile)
 - [ ] pre-commit hook (install `pre-commit` through `uv` and put command on the `Makefile` to do that)
 
+## 2025-03-02
+
 ### DID
 
 - [-] API Layer
     - [-] Implement remaining endpoints:
         - [-] task
+            - [-] get
+                - [x] single
             - [x] post
             - [x] patch
             - [x] delete
