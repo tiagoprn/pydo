@@ -10,7 +10,10 @@
             - [ ] delete
             - [ ] get
                 - [ ] single
-                - [ ] with filter
+                - [ ] all
+                    - [ ] without filter
+                    - [ ] with filter
+                    - [ ] implement pagination (customizable on .env; 3 per page for testing purposes)
     - [ ] Manually test interacting with the API on swagger (make sure everything is working)
         - [ ] Update the docs with the link to access swagger API
 
