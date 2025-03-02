@@ -128,6 +128,15 @@ dev-infra-stop: clean  ## Stop docker infrastructure containers
 dev-infra-delete: dev-infra-stop  ## Delete docker infrastructure containers
 	@docker compose rm -f
 
+dev-infra-quick-recreate-containers:  dev-infra-delete dev-infra-start  ## delete, start and recreate infrastructure containers (applying the database migrations)
+	@echo -e 'Waiting 10 seconds to the containers to start so we can run the db migrations...'
+	@for i in $$(seq 10 -1 1); do \
+		echo -ne "$$i seconds remaining...\r"; \
+		sleep 1; \
+	done
+	@echo -e 'Applying migrations...'
+	@$(MAKE) migrate
+
 dev-api-docs:  ## Print URL of the API docs
 	@echo 'Visit 0.0.0.0/apidocs on your browser to view the swagger API docs.'
 
