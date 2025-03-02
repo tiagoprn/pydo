@@ -262,3 +262,154 @@ def update_user():
 
     password_value = 'SUCCESSFULLY CHANGED' if password else 'NOT CHANGED'
     return jsonify({"uuid": str(user.uuid), "email": user.email, "password": password_value}), 200
+
+
+@api_blueprint.route("/task", methods=["POST"])
+@jwt_required()
+def create_task():
+    """
+    Create task
+    ---
+    parameters:
+      - name: title
+        type: string
+        required: true
+      - name: description
+        type: string
+        required: true
+      - name: status
+        type: string (pending, in_progress, completed)
+        required: false
+      - name: due_date
+        type: string (YYYY-MM-DD HH:MM)
+        required: false
+    responses:
+      200:
+        description: task info
+    """
+    user_uuid = get_jwt_identity()
+    user = User.get_by(uuid=user_uuid)
+
+    data = request.get_json()
+
+    title = data.get('title')
+    description = data.get('description')
+    status = data.get('status')
+    due_date = data.get('due_date')
+
+    new_data = {
+        'user_uuid': user_uuid,
+        'title': title,
+        'description': description,
+        'status': status if status else 'pending',
+    }
+    if due_date:
+        new_data['due_date'] = datetime.strptime(due_date, '%Y-%m-%d %H:%M')
+        # TODO: valid date and date >= datetime.utcnow()
+
+    # TODO: validate status
+
+    created_task_instance = Task().create(**new_data)
+
+    created_task_data = {
+        'uuid': created_task_instance.uuid,
+        'title': created_task_instance.title,
+        'description': created_task_instance.description,
+        'status': created_task_instance.status,
+        'due_date': created_task_instance.due_date.isoformat(),
+        'created_at': created_task_instance.created_at.isoformat(),
+        'last_updated_at': created_task_instance.last_updated_at.isoformat()
+    }
+    return jsonify(created_task_data), 201
+
+
+@api_blueprint.route("/task", methods=["PATCH"])
+@jwt_required()
+def update_task():
+    """
+    Update task
+    ---
+    parameters:
+      - name: uuid
+        type: string
+        required: true
+      - name: title
+        type: string
+        required: true
+      - name: description
+        type: string
+        required: true
+      - name: status
+        type: string (pending, in_progress, completed)
+        required: false
+      - name: due_date
+        type: string (YYYY-MM-DD HH:MM)
+        required: false
+    responses:
+      200:
+        description: task info
+    """
+    user_uuid = get_jwt_identity()
+    user = User.get_by(uuid=user_uuid)
+
+    data = request.get_json()
+
+    task_uuid = data.get('uuid')
+    title = data.get('title')
+    description = data.get('description')
+    status = data.get('status')
+    due_date = data.get('due_date')
+
+    updated_data = {
+        'title': title,
+        'description': description,
+        'status': status if status else 'pending',
+    }
+    if due_date:
+        updated_data['due_date'] = datetime.strptime(due_date, '%Y-%m-%d %H:%M')
+        # TODO: valid date and date >= datetime.utcnow()
+
+    # TODO: validate status
+
+    task_instance = Task().filter_by(uuids=[task_uuid])[0]
+    task_instance.update(**updated_data)
+
+    updated_task_data = {
+        'uuid': task_instance.uuid,
+        'title': task_instance.title,
+        'description': task_instance.description,
+        'status': task_instance.status,
+        'due_date': task_instance.due_date.isoformat(),
+        'created_at': task_instance.created_at.isoformat(),
+        'last_updated_at': task_instance.last_updated_at.isoformat()
+    }
+    return jsonify(updated_task_data), 200
+
+@api_blueprint.route("/task", methods=["DELETE"])
+@jwt_required()
+def delete_task():
+    """
+    Delete task
+    ---
+    parameters:
+      - name: uuid
+        type: string
+        required: true
+    responses:
+      204:
+        description: successfully deleted
+      400:
+        description: not deleted (non-existing or error during deletion)
+    """
+    user_uuid = get_jwt_identity()
+    user = User.get_by(uuid=user_uuid)
+
+    data = request.get_json()
+    task_uuid = data.get('uuid')
+
+    deleted = Task.delete(user_uuid=user_uuid, uuid=task_uuid)
+
+    if deleted:
+        return '', 204
+
+    return jsonify({'message': 'could not delete task (non-existing or error during deletion)'}), 400

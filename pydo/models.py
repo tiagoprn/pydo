@@ -117,6 +117,18 @@ class Task(db.Model):
         db.session.refresh(self)
 
     @staticmethod
+    def delete(user_uuid: str, uuid: str) -> bool:
+        try:
+            task_instance = Task.filter_by(uuids=[uuid], user_uuids=[user_uuid])[0]
+            if not task_instance:
+                return False
+            db.session.delete(task_instance)
+            db.session.commit()
+            return True
+        except Exception:
+            return False
+
+    @staticmethod
     def filter_by(user_uuids: List[str]=[], uuids: List[str]=[], status: List[str]=[],
                   start_due_date: datetime=None, end_due_date: datetime=None) -> List["Task"]:
         """

@@ -5,15 +5,12 @@
 - [-] API Layer
     - [-] Implement remaining endpoints:
         - [-] task
-            - [ ] post
-            - [ ] patch
-            - [ ] delete
             - [ ] get
                 - [ ] single
                 - [ ] all
                     - [ ] without filter
                     - [ ] with filter
-                    - [ ] implement pagination (customizable on .env; 3 per page for testing purposes)
+                    - [ ] implement pagination on the API layer (customizable on .env; 3 per page for testing purposes)
     - [ ] Manually test interacting with the API on swagger (make sure everything is working)
         - [ ] Update the docs with the link to access swagger API
 
@@ -37,6 +34,10 @@
 
 - [-] API Layer
     - [-] Implement remaining endpoints:
+        - [-] task
+            - [x] post
+            - [x] patch
+            - [x] delete
         - [x] user
             - [x] patch
     - [x] Implement the JWT endpoints
