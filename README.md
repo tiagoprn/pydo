@@ -179,7 +179,7 @@ Then, check the api documentation:
 
 ``` bash
 
-$ pytest -s -k 'test_models' -vvv
+$ pytest -s -k 'test_models' -vvv  --disable-warnings
 
 ```
 

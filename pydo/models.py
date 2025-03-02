@@ -1,9 +1,12 @@
+import re
 from datetime import datetime
 from typing import List, Union
 from uuid import uuid4
 
 from sqlalchemy import Enum
 from sqlalchemy.dialects.postgresql import UUID
+
+from pydo.commons import get_query_raw_sql
 from pydo.extensions import db, bcrypt
 
 """
@@ -163,5 +166,8 @@ class Task(db.Model):
             query = query.filter(Task.due_date >= start_due_date)
         if end_due_date:
             query = query.filter(Task.due_date <= end_due_date)
+
+        raw_query = get_query_raw_sql(query=query)
+        print(f'-----> raw SQL query -----> {raw_query}')
 
         return query.all()

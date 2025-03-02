@@ -1,7 +1,31 @@
 import os
+import re
 from functools import lru_cache
 from pathlib import Path
 
+from sqlalchemy.orm import Query
+from sqlalchemy.dialects import postgresql
+
+def get_query_raw_sql(query: Query) -> str:
+    """
+    Convert a SQLAlchemy query to a readable SQL string with parameters.
+
+    Useful for debugging.
+    """
+    try:
+        # Try with PostgreSQL dialect which handles UUIDs better
+        raw_query = str(query.statement.compile(
+            dialect=postgresql.dialect(),
+            compile_kwargs={"literal_binds": True}
+        ))
+    except Exception:
+        # Fallback to parameters approach if literal binds fail
+        compiled = query.statement.compile()
+        params = compiled.params
+        raw_query = f"{str(compiled)} [params: {params}]"
+
+    raw_query = re.sub(r'\s+', ' ', raw_query).strip()
+    return raw_query
 
 def get_version_file_path() -> str:
     root_path = Path().absolute()
