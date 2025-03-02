@@ -1,26 +1,28 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from random import randint
 
 import flask
-from flask import Blueprint, jsonify
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 from pydo.exceptions import APIError
+from pydo.models import User, Task
 from pydo.settings import VERSION
 from pydo.tasks import compute, generate_random_string
 
-blueprint = Blueprint('api', __name__)
+api_blueprint = Blueprint('api', __name__)
 
 logger = logging.getLogger(__name__)
 
 
-@blueprint.errorhandler(APIError)
+@api_blueprint.errorhandler(APIError)
 def handle_api_error(error):
     response = jsonify(error.payload)
     response.status_code = error.status_code
     return response
 
 
-@blueprint.route('/compute', methods=['GET'])
+@api_blueprint.route('/compute', methods=['GET'])
 def call_compute_task():
     """
     Put a compute task on the queue.
@@ -46,7 +48,7 @@ def call_compute_task():
     return jsonify({'message': 'Successfully sent to queue.'})
 
 
-@blueprint.route('/string', methods=['GET'])
+@api_blueprint.route('/string', methods=['GET'])
 def call_generate_random_string_task():
     """
     Put a generate random string task on the queue.
@@ -67,7 +69,7 @@ def call_generate_random_string_task():
     return jsonify({'message': 'Successfully sent to queue.'})
 
 
-@blueprint.route('/health-check/readiness', methods=['GET'])
+@api_blueprint.route('/health-check/readiness', methods=['GET'])
 def readiness():
     """
     Used by k8s, to know when a container is ready.
@@ -96,7 +98,7 @@ def readiness():
     return jsonify(response_dict)
 
 
-@blueprint.route('/health-check/liveness', methods=['GET'])
+@api_blueprint.route('/health-check/liveness', methods=['GET'])
 def liveness():
     """
     Used by k8s, to know if a Container is live.
@@ -121,7 +123,7 @@ def liveness():
     return jsonify(response_dict)
 
 
-@blueprint.route('/welcome/<person>', methods=['GET'])
+@api_blueprint.route('/welcome/<person>', methods=['GET'])
 def welcome(person: str):
     """
     Returns a welcome message with custom text.
@@ -137,3 +139,108 @@ def welcome(person: str):
     """
     response_dict = {'message': f'Hello, {person}!'}
     return jsonify(response_dict)
+
+
+@api_blueprint.route("/login", methods=["POST"])
+def login():
+    """
+    Login
+    ---
+    parameters:
+      - name: email
+        type: string
+        required: true
+      - name: password
+        type: string
+        required: true
+    responses:
+      200:
+        description: JWT temporary access token & JWT long-live refresh token
+    """
+    data = request.get_json()
+
+    email = data['email']
+    password = data['password']
+
+    user = User.get_by(email=email)
+    is_valid_password = user.check_password(password=password)
+
+    if user and is_valid_password:
+        # temporary access token:
+        access_token = create_access_token(identity=str(user.uuid), expires_delta=timedelta(hours=1))
+
+        # long-live refresh token:
+        refresh_token = create_refresh_token(identity=str(user.uuid))
+
+        return jsonify({"access_token": access_token, "refresh_token": refresh_token}), 200
+
+    return jsonify({"msg": "Invalid credentials"}), 401
+
+
+@api_blueprint.route("/token/new", methods=["POST"])
+@jwt_required(refresh=True)  # with this param, requires the refresh token (long-live one)
+def token_refresh():
+    """
+    Get a new JWT temporary access token (expires in 1 hour)
+    ---
+    responses:
+      200:
+        description: JWT temporary access token
+    """
+    identity = get_jwt_identity()
+    new_access_token = create_access_token(identity=identity, expires_delta=timedelta(hours=1))
+    return jsonify({"access_token": new_access_token}), 200
+
+
+@api_blueprint.route("/user", methods=["POST"])
+def create_user():
+    """
+    Create a new user
+    ---
+    parameters:
+      - name: username
+        type: string
+        required: true
+      - name: email
+        type: string
+        required: true
+      - name: password
+        type: string
+        required: true
+    responses:
+      201:
+        description: created user data.
+    """
+    data = request.get_json()
+
+    new_user = User().register(**data)
+
+    return jsonify({"uuid": str(new_user.uuid)}), 201
+
+
+@api_blueprint.route("/user", methods=["GET"])
+@jwt_required()  # with no params, requires the access token (temporary one)
+def get_user():
+    """
+    Get user info
+    ---
+    responses:
+      200:
+        description: user info
+    """
+    user_uuid = get_jwt_identity()
+
+    user = User.get_by(uuid=user_uuid)
+    return jsonify({"uuid": str(user.uuid), "username": user.username, "email": user.email}), 200
+
+
+@api_blueprint.route("/user", methods=["PATCH"])
+@jwt_required()
+def update_user():
+    ...  # TODO: implement
+
+
+@api_blueprint.route("/user", methods=["DELETE"])
+@jwt_required()
+def delete_user():
+    ...  # TODO: implement

@@ -5,6 +5,7 @@ psycopg2-binary
 Flask-Migrate
 Flask-SQLAlchemy
 flask-bcrypt
+flask-jwt-extended
 celery
 gunicorn
 python-decouple

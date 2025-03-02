@@ -7,12 +7,14 @@ https://flask.palletsprojects.com/en/1.1.x/patterns/appfactories/#factories-exte
 from celery import Celery
 from flasgger import Swagger
 from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from pydo import settings
 
 
 bcrypt = Bcrypt()
+jwt = JWTManager()
 
 def init_swagger(app):
     return Swagger(app, template=settings.SWAGGER_TEMPLATE)
@@ -21,6 +23,10 @@ def init_bcrypt(app):
     app.config['JWT_SECRET_KEY'] = settings.JWT_SECRET_KEY
     # print(f">>>>>>>> JWT_SECRET_KEY={app.config['JWT_SECRET_KEY']}")
     bcrypt.init_app(app)
+
+def init_jwt(app):
+    app.config['JWT_SECRET_KEY'] = settings.JWT_SECRET_KEY
+    jwt.init_app(app)
 
 def init_celery(app):
     # Build the broker URL from settings

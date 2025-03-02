@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask
-from pydo.extensions import init_celery, init_db, init_swagger, init_bcrypt
+from pydo.extensions import init_celery, init_db, init_swagger, init_bcrypt, init_jwt
 
 PKG_NAME = os.path.dirname(os.path.realpath(__file__)).split('/')[-1]
 
@@ -18,7 +18,9 @@ def create_app():
 
     init_bcrypt(app)
 
-    from pydo.api import blueprint
+    init_jwt(app)
 
-    app.register_blueprint(blueprint)
+    from pydo.api import api_blueprint
+
+    app.register_blueprint(api_blueprint)
     return app

@@ -10,7 +10,7 @@ def app():
         yield app  # This ensures the app context is active during tests
 
 @pytest.fixture
-def client(app):
+def test_client(app):
     return app.test_client()
 
 @pytest.fixture
