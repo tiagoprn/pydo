@@ -1,4 +1,4 @@
-## 2025-03-01
+## 2025-03-02
 
 ### DOING
 
@@ -31,13 +31,10 @@
 - [ ] populate the database with some tasks - using a `flask shell` script; add command to the Makefile
 - [ ] Dockerize (update Dockerfile)
 - [ ] revise the README.md once more
-- [ ] use "git-secret": migrate `.env.JWT_SECRET_KEY` to there
 - [ ] pre-commit hook (install `pre-commit` through `uv` and put command on the `Makefile` to do that)
-- [ ] CI pipeline (github actions):
-    - [ ] ruff lint/format check
-    - [ ] tests (with coverage report)
-- [ ] deploy to a VPS ? (if I have time)
-- [ ] adhere to Clean Architecture principles, including separation of concerns and independence of components.
+
+
+## 2025-03-01
 
 ### DID
 

@@ -57,8 +57,19 @@ See [this](ARCHITECTURE.md)
 
 - environment variables for configuration (`.env` file)
 
+## Potential enhancements
 
-## Run Locally
+- Use "git-secret": migrate `.env.JWT_SECRET_KEY` to there
+
+- Audit trail for changes on user/task tables
+
+- CI pipeline (github actions):
+    - ruff lint/format check
+    - tests (with coverage report)
+
+- Apply Clean/Hexagonal Architecture
+
+## How to run this project locally (development environment)
 
 ### OPTION 1 - USING AN UV VIRTUALENV:
 
@@ -191,4 +202,3 @@ To connect to the database (using pgcli):
 $ make dev-pgcli
 
 ```
-
