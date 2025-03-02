@@ -35,16 +35,6 @@ class User(db.Model):
         db.session.refresh(new_user)
         return new_user
 
-    @staticmethod
-    def get_by(uuid: str='', email: str='', username: str='') -> Union[None, "User"]:
-        if uuid:
-            return User.query.filter_by(uuid=uuid).first()
-        if email:
-            return User.query.filter_by(email=email).first()
-        if username:
-            return User.query.filter_by(username=username).first()
-        return None
-
     def update(self, email: str='', password: str=''):
         if (not email) and (not password):
             return self
@@ -59,6 +49,16 @@ class User(db.Model):
         db.session.add(self)
         db.session.commit()
         db.session.refresh(self)
+
+    @staticmethod
+    def get_by(uuid: str='', email: str='', username: str='') -> Union[None, "User"]:
+        if uuid:
+            return User.query.filter_by(uuid=uuid).first()
+        if email:
+            return User.query.filter_by(email=email).first()
+        if username:
+            return User.query.filter_by(username=username).first()
+        return None
 
 
 class Task(db.Model):
@@ -76,5 +76,58 @@ class Task(db.Model):
 
     user_uuid = db.Column(UUID(as_uuid=True), db.ForeignKey("user.uuid"), nullable=False)
 
-    def filter_by(self, user_uuid: str, status: List[str], due_date: datetime):
-        ...  # TODO:
+    def create(self, user_uuid: str, title: str, description: str, status: str, due_date: datetime=None) -> 'Task':
+        data = {
+            'user_uuid': user_uuid,
+            'title': title,
+            'description': description,
+            'status': status
+        }
+        if due_date:
+            data['due_date'] = due_date
+        new_task = Task(**data)
+        db.session.add(new_task)
+        db.session.commit()
+        db.session.refresh(new_task)
+        return new_task
+
+    def update(self, title: str='', description: str='', status: str='', due_date: datetime=None):
+        if not(title or description or status or due_date):
+            return
+
+        if title:
+            self.title = title
+
+        if description:
+            self.description = description
+
+        if status:
+            self.status = status
+
+        if self.due_date:
+            self.due_date = due_date
+
+        self.last_updated_at = datetime.utcnow()
+        db.session.add(self)
+        db.session.commit()
+        db.session.refresh(self)
+
+    @staticmethod
+    def filter_by(user_uuids: List[str]=[], uuids: List[str]=[], status: List[str]=[], due_date: datetime=None):
+        filters_data = {}
+
+        if user_uuids:
+            filters_data['user_uuid'] = user_uuids[0]  # TODO: support list of user_uuids
+
+        if uuids:
+            filters_data['uuid'] = uuids[0]  # TODO: support list of uuids
+
+        if status:
+            filters_data['status'] = status
+
+        if due_date:
+            filters_data['due_date'] = due_date  # TODO: add start_due_date & end_due_date
+
+        print(f'>>>>>> filters: {filters_data}')
+
+        return Task.query.filter_by(**filters_data).all()
