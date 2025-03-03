@@ -306,14 +306,26 @@ def create_task():
       - name: due_date
         type: string (YYYY-MM-DD HH:MM)
         required: false
+      - name: user_uuid
+        description: this allows a user to create (and assign) a task for another user
+        type: string
+        required: false
     responses:
       200:
         description: task info
     """
-    user_uuid = get_jwt_identity()
-    user = User.get_by(uuid=user_uuid)
-
     data = request.get_json()
+
+    """
+    NOTE: When finishing the API, I noticed that I forgot a very important
+          feature: that a user must be able to assign a task for another user.
+          So, I changed the API to support this.
+
+          But due do time constraints I was not able to add a created_by_user_uuid
+          field to the table, to keep track of who created the task.
+          It must be done on a future version as an improvement.
+    """
+    user_uuid = data.get('user_uuid') or get_jwt_identity()
 
     title = data.get('title')
     description = data.get('description')
@@ -341,7 +353,8 @@ def create_task():
         'status': created_task_instance.status,
         'due_date': created_task_instance.due_date.isoformat(),
         'created_at': created_task_instance.created_at.isoformat(),
-        'last_updated_at': created_task_instance.last_updated_at.isoformat()
+        'last_updated_at': created_task_instance.last_updated_at.isoformat(),
+        'user_uuid': str(created_task_instance.user_uuid)
     }
     return jsonify(created_task_data), 201
 

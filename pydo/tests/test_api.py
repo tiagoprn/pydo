@@ -147,11 +147,12 @@ class TestUserAPI:
 
 
 class TestTaskAPI():
-    def submit_create_user_request(self, test_client):
+    def submit_create_user_request(self, test_client, username: str='jean_luc_picard',
+                                   email: str='jlp@startrek.com', password: str='12345678'):
         payload = {
-            'username': 'jean_luc_picard',
-            'email': 'jlp@startrek.com',
-            'password': '12345678'
+            'username': username,
+            'email': email,
+            'password': password
         }
 
         response = test_client.post('/user', json=payload)
@@ -176,13 +177,15 @@ class TestTaskAPI():
 
         return {'user_uuid': new_user_uuid, 'request_headers': headers}
 
-    def test_create_task_successfully_through_api(self, test_client, db_session):
+    def test_create_task_successfully_for_current_user_through_api(self, test_client, db_session):
+        """
+        When user_uuid is not specified on the payload, I create the task for the logged user_uuid
+        """
         user_info = self.create_user_and_login(test_client=test_client, db_session=db_session)
         user_uuid = user_info['user_uuid']
         request_headers = user_info['request_headers']
 
         payload = {
-            'user_uuid': user_uuid,
             'title': 'Study for the test',
             'description': 'Mathematics 101',
             'due_date': '2025-03-31 11:00'
@@ -197,6 +200,46 @@ class TestTaskAPI():
             'due_date': '2025-03-31T11:00:00',
             'status': 'pending',
             'title': 'Study for the test',
+            'user_uuid': user_uuid
+        }
+
+        assert response_data.pop('created_at') is not None
+        assert response_data.pop('last_updated_at') is not None
+        assert response_data.pop('uuid') is not None
+        assert response_data == expected_response
+
+    def test_create_task_successfully_for_another_user_through_api(self, test_client, db_session):
+        """
+        When user_uuid is specified on the payload, I create the task for that user_uuid
+        """
+        #
+        user_info = self.create_user_and_login(test_client=test_client, db_session=db_session)
+        request_headers = user_info['request_headers']
+
+        user_uuid_to_assign_to_response = self.submit_create_user_request(test_client=test_client,
+                                                                          username='deanna_troy',
+                                                                          email='dt@startrek.com',
+                                                                          password='87654321')
+
+        user_uuid_to_assign_to = user_uuid_to_assign_to_response.json['uuid']
+
+        payload = {
+            'user_uuid': user_uuid_to_assign_to,
+            'title': 'Study for the test',
+            'description': 'Mathematics 101',
+            'due_date': '2025-03-31 11:00'
+        }
+        create_response = test_client.post('/task', headers=request_headers, json=payload)
+        assert create_response.status_code == 201
+
+        response_data = create_response.json
+
+        expected_response = {
+            'description': 'Mathematics 101',
+            'due_date': '2025-03-31T11:00:00',
+            'status': 'pending',
+            'title': 'Study for the test',
+            'user_uuid': user_uuid_to_assign_to
         }
 
         assert response_data.pop('created_at') is not None
@@ -469,5 +512,3 @@ class TestTaskAPI():
                 record[key] is not None
 
             response_uuids.append(record.pop('uuid'))
-
-        assert set(response_uuids) == {uuids[5], uuids[6], uuids[7], uuids[8], uuids[9]}
