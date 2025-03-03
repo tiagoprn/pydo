@@ -1,6 +1,5 @@
-import re
 from datetime import datetime
-from typing import List, Union, Dict
+from typing import List, Union
 from uuid import uuid4
 
 from sqlalchemy import Enum
@@ -27,23 +26,25 @@ class User(db.Model):
     #       so I can get e.g. "task_instance.user.email".
     #       The alternative would be to use back_populates to make this explicit on both models
     #       (so I would need to declare the relationship on both models)
-    tasks = db.relationship("Task", backref="user", lazy=True)
+    tasks = db.relationship('Task', backref='user', lazy=True)
 
     def hash(self, password: str) -> object:
-        return bcrypt.generate_password_hash(password).decode("utf-8")
+        return bcrypt.generate_password_hash(password).decode('utf-8')
 
     def check_password(self, password: str) -> bool:
         return bcrypt.check_password_hash(self.password_hash, password)
 
     def register(self, username: str, email: str, password: str) -> 'User':
         # TODO: handle existing user
-        new_user = User(username=username, email=email, password_hash=self.hash(password))
+        new_user = User(
+            username=username, email=email, password_hash=self.hash(password)
+        )
         db.session.add(new_user)
         db.session.commit()
         db.session.refresh(new_user)
         return new_user
 
-    def update(self, email: str='', password: str=''):
+    def update(self, email: str = '', password: str = ''):
         if (not email) and (not password):
             return self
 
@@ -59,7 +60,9 @@ class User(db.Model):
         db.session.refresh(self)
 
     @staticmethod
-    def get_by(uuid: str='', email: str='', username: str='') -> Union[None, "User"]:
+    def get_by(
+        uuid: str = '', email: str = '', username: str = ''
+    ) -> Union[None, 'User']:
         if uuid:
             return User.query.filter_by(uuid=uuid).first()
         if email:
@@ -82,14 +85,23 @@ class Task(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_updated_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    user_uuid = db.Column(UUID(as_uuid=True), db.ForeignKey("user.uuid"), nullable=False)
+    user_uuid = db.Column(
+        UUID(as_uuid=True), db.ForeignKey('user.uuid'), nullable=False
+    )
 
-    def create(self, user_uuid: str, title: str, description: str, status: str, due_date: datetime=None) -> 'Task':
+    def create(
+        self,
+        user_uuid: str,
+        title: str,
+        description: str,
+        status: str,
+        due_date: datetime = None,
+    ) -> 'Task':
         data = {
             'user_uuid': user_uuid,
             'title': title,
             'description': description,
-            'status': status
+            'status': status,
         }
         if due_date:
             data['due_date'] = due_date
@@ -99,8 +111,15 @@ class Task(db.Model):
         db.session.refresh(new_task)
         return new_task
 
-    def update(self, title: str='', description: str='', status: str='', due_date: datetime=None, user_uuid: str=''):
-        if not(title or description or status or due_date):
+    def update(
+        self,
+        title: str = '',
+        description: str = '',
+        status: str = '',
+        due_date: datetime = None,
+        user_uuid: str = '',
+    ):
+        if not (title or description or status or due_date):
             return
 
         if title:
@@ -136,8 +155,13 @@ class Task(db.Model):
             return False
 
     @staticmethod
-    def filter_by(user_uuids: List[str]=[], uuids: List[str]=[], status: List[str]=[],
-                  start_due_date: datetime=None, end_due_date: datetime=None) -> List["Task"]:
+    def filter_by(
+        user_uuids: List[str] = [],
+        uuids: List[str] = [],
+        status: List[str] = [],
+        start_due_date: datetime = None,
+        end_due_date: datetime = None,
+    ) -> List['Task']:
         """
         Filter tasks based on various criteria.
 
@@ -150,7 +174,13 @@ class Task(db.Model):
         The filtering strategy combines SQLAlchemy's filter_by() for simple equality conditions
         and filter() for more complex conditions like lists and ranges.
         """
-        if (not user_uuids) and (not uuids) and (not status) and (not start_due_date) and (not end_due_date):
+        if (
+            (not user_uuids)
+            and (not uuids)
+            and (not status)
+            and (not start_due_date)
+            and (not end_due_date)
+        ):
             return Task.query.all()
 
         filters_data = {}
@@ -167,8 +197,10 @@ class Task(db.Model):
         if status:
             invalid_statuses = [s for s in status if s not in valid_statuses]
             if invalid_statuses:
-                raise ValueError(f"Invalid status values: {invalid_statuses}. "
-                                f"Allowed values are: {valid_statuses}")
+                raise ValueError(
+                    f'Invalid status values: {invalid_statuses}. '
+                    f'Allowed values are: {valid_statuses}'
+                )
 
             if len(status) == 1:
                 filters_data['status'] = status[0]

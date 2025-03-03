@@ -5,7 +5,7 @@ import pytest
 from sqlalchemy.exc import DataError
 
 from pydo.models import User, Task
-from pydo.tests.utils import create_multi_users, create_tasks_for_various_users
+from pydo.tests.utils import create_tasks_for_various_users
 
 
 # TODO: the functions below could be fixtures on conftest.py
@@ -13,12 +13,13 @@ def create_user():
     user_data = {
         'username': 'jean_luc_picard',
         'email': 'jlp@startrek.com',
-        'password': '12345678'
+        'password': '12345678',
     }
     new_user = User().register(**user_data)
     return new_user
 
-def create_tasks_for_single_user(status: List[str]=[]) -> List[str]:
+
+def create_tasks_for_single_user(status: List[str] = []) -> List[str]:
     uuids = []
 
     user = create_user()
@@ -29,14 +30,14 @@ def create_tasks_for_single_user(status: List[str]=[]) -> List[str]:
             'title': 'study',
             'description': 'must get better',
             'due_date': datetime.utcnow() + timedelta(days=3),
-            'status': status[0] if status else 'pending'
+            'status': status[0] if status else 'pending',
         },
         {
             'user_uuid': user.uuid,
             'title': 'gym',
             'description': 'must get healthy',
             'due_date': datetime.utcnow() + timedelta(days=1),
-            'status': status[1] if status else 'pending'
+            'status': status[1] if status else 'pending',
         },
     ]
     for data in tasks_data:
@@ -104,7 +105,9 @@ class TestUserModel:
 
         assert new_user.last_updated_at > old_last_updated_at
 
-    def test_update_user_with_new_email_and_new_password_must_be_successful(self, db_session):
+    def test_update_user_with_new_email_and_new_password_must_be_successful(
+        self, db_session
+    ):
         new_user = create_user()
         assert new_user.username
 
@@ -141,7 +144,7 @@ class TestUserModel:
         assert new_user.last_updated_at == old_last_updated_at
 
 
-class TestTaskModel():
+class TestTaskModel:
     def test_create_tasks_for_single_user_with_valid_status(self, db_session):
         tasks_uuids = create_tasks_for_single_user()
         assert len(tasks_uuids) == 2
@@ -156,8 +159,10 @@ class TestTaskModel():
 
         assert tasks_uuids is None
         assert exception_instance.type is DataError
-        expected_exception_value = ('(psycopg2.errors.InvalidTextRepresentation) invalid input value '
-                                    'for enum task_status_enum: "invalid1"')
+        expected_exception_value = (
+            '(psycopg2.errors.InvalidTextRepresentation) invalid input value '
+            'for enum task_status_enum: "invalid1"'
+        )
         assert expected_exception_value in exception_instance.value.args[0]
 
     def test_update_task_successfully(self, db_session):
@@ -173,7 +178,7 @@ class TestTaskModel():
             'title': 'changed title',
             'description': 'changed description',
             'status': 'in_progress',
-            'due_date': datetime.utcnow() + timedelta(days=15)
+            'due_date': datetime.utcnow() + timedelta(days=15),
         }
         first_task.update(**update_values)
 
@@ -202,11 +207,12 @@ class TestTaskModel():
         assert len(uuids) == 15
 
         first_user = User.get_by(username='jean_luc_picard')
-        jean_luc_picard_tasks = Task.filter_by(user_uuids=[first_user.uuid],
-                                               status=['pending', 'in_progress'],
-                                               start_due_date= datetime.strptime('2025-01-02', '%Y-%m-%d'),
-                                               end_due_date= datetime.strptime('2025-01-04 23:59:59',
-                                                                               '%Y-%m-%d %H:%M:%S'))
+        jean_luc_picard_tasks = Task.filter_by(
+            user_uuids=[first_user.uuid],
+            status=['pending', 'in_progress'],
+            start_due_date=datetime.strptime('2025-01-02', '%Y-%m-%d'),
+            end_due_date=datetime.strptime('2025-01-04 23:59:59', '%Y-%m-%d %H:%M:%S'),
+        )
 
         expected_uuids_values = {uuids[0], uuids[1]}
         uuid_values = {str(task.uuid) for task in jean_luc_picard_tasks}
@@ -214,12 +220,12 @@ class TestTaskModel():
 
         second_user = User.get_by(username='william_riker')
         third_user = User.get_by(username='deanna_troy')
-        multi_user_tasks = Task.filter_by(user_uuids=[first_user.uuid, second_user.uuid, third_user.uuid],
-                                          status=['completed'],
-                                          start_due_date= datetime.strptime('2025-01-02 13:00',
-                                                                            '%Y-%m-%d  %H:%M'),
-                                          end_due_date= datetime.strptime('2025-01-06 10:20',
-                                                                          '%Y-%m-%d %H:%M'))
+        multi_user_tasks = Task.filter_by(
+            user_uuids=[first_user.uuid, second_user.uuid, third_user.uuid],
+            status=['completed'],
+            start_due_date=datetime.strptime('2025-01-02 13:00', '%Y-%m-%d  %H:%M'),
+            end_due_date=datetime.strptime('2025-01-06 10:20', '%Y-%m-%d %H:%M'),
+        )
         expected_uuids_values = {uuids[4], uuids[6], uuids[12]}
         uuid_values = {str(task.uuid) for task in multi_user_tasks}
         assert uuid_values == expected_uuids_values

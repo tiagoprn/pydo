@@ -16,16 +16,20 @@ from pydo import settings
 bcrypt = Bcrypt()
 jwt = JWTManager()
 
+
 def init_swagger(app):
     return Swagger(app, template=settings.SWAGGER_TEMPLATE)
+
 
 def init_bcrypt(app):
     app.config['JWT_SECRET_KEY'] = settings.JWT_SECRET_KEY
     bcrypt.init_app(app)
 
+
 def init_jwt(app):
     app.config['JWT_SECRET_KEY'] = settings.JWT_SECRET_KEY
     jwt.init_app(app)
+
 
 def init_celery(app):
     # Build the broker URL from settings
@@ -60,10 +64,12 @@ def init_celery(app):
 
     # Wrap tasks to run within the Flask app context
     TaskBase = celery.Task
+
     class ContextTask(TaskBase):
         def __call__(self, *args, **kwargs):
             with app.app_context():
                 return TaskBase.__call__(self, *args, **kwargs)
+
     celery.Task = ContextTask
 
     # Optionally store the celery instance on the app for later use

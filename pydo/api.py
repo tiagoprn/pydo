@@ -4,7 +4,12 @@ from random import randint
 
 import flask
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import (
+    create_access_token,
+    create_refresh_token,
+    jwt_required,
+    get_jwt_identity,
+)
 from pydo.commons import format_list_of_tasks, paginate_query
 from pydo.exceptions import APIError
 from pydo.models import User, Task
@@ -152,7 +157,7 @@ def welcome(person: str):
     return jsonify(response_dict)
 
 
-@api_blueprint.route("/login", methods=["POST"])
+@api_blueprint.route('/login', methods=['POST'])
 def login():
     """
     Login
@@ -180,18 +185,24 @@ def login():
 
     if user and is_valid_password:
         # temporary access token:
-        access_token = create_access_token(identity=str(user.uuid), expires_delta=timedelta(hours=1))
+        access_token = create_access_token(
+            identity=str(user.uuid), expires_delta=timedelta(hours=1)
+        )
 
         # long-live refresh token:
         refresh_token = create_refresh_token(identity=str(user.uuid))
 
-        return jsonify({"access_token": access_token, "refresh_token": refresh_token}), 200
+        return jsonify(
+            {'access_token': access_token, 'refresh_token': refresh_token}
+        ), 200
 
-    return jsonify({"msg": "Invalid credentials"}), 401
+    return jsonify({'msg': 'Invalid credentials'}), 401
 
 
-@api_blueprint.route("/token/new", methods=["POST"])
-@jwt_required(refresh=True)  # with this param, requires the refresh token (long-live one)
+@api_blueprint.route('/token/new', methods=['POST'])
+@jwt_required(
+    refresh=True
+)  # with this param, requires the refresh token (long-live one)
 def token_refresh():
     """
     Get a new JWT temporary access token (expires in 1 hour)
@@ -203,11 +214,13 @@ def token_refresh():
         description: JWT temporary access token
     """
     identity = get_jwt_identity()
-    new_access_token = create_access_token(identity=identity, expires_delta=timedelta(hours=1))
-    return jsonify({"access_token": new_access_token}), 200
+    new_access_token = create_access_token(
+        identity=identity, expires_delta=timedelta(hours=1)
+    )
+    return jsonify({'access_token': new_access_token}), 200
 
 
-@api_blueprint.route("/user", methods=["POST"])
+@api_blueprint.route('/user', methods=['POST'])
 def create_user():
     """
     Create a new user
@@ -232,10 +245,10 @@ def create_user():
 
     new_user = User().register(**data)
 
-    return jsonify({"uuid": str(new_user.uuid)}), 201
+    return jsonify({'uuid': str(new_user.uuid)}), 201
 
 
-@api_blueprint.route("/user", methods=["GET"])
+@api_blueprint.route('/user', methods=['GET'])
 @jwt_required()  # with no params, requires the access token (temporary one)
 def get_user():
     """
@@ -250,10 +263,12 @@ def get_user():
     user_uuid = get_jwt_identity()
 
     user = User.get_by(uuid=user_uuid)
-    return jsonify({"uuid": str(user.uuid), "username": user.username, "email": user.email}), 200
+    return jsonify(
+        {'uuid': str(user.uuid), 'username': user.username, 'email': user.email}
+    ), 200
 
 
-@api_blueprint.route("/user", methods=["PATCH"])
+@api_blueprint.route('/user', methods=['PATCH'])
 @jwt_required()
 def update_user():
     """
@@ -282,10 +297,12 @@ def update_user():
     user.update(email=email, password=password)
 
     password_value = 'SUCCESSFULLY CHANGED' if password else 'NOT CHANGED'
-    return jsonify({"uuid": str(user.uuid), "email": user.email, "password": password_value}), 200
+    return jsonify(
+        {'uuid': str(user.uuid), 'email': user.email, 'password': password_value}
+    ), 200
 
 
-@api_blueprint.route("/task", methods=["POST"])
+@api_blueprint.route('/task', methods=['POST'])
 @jwt_required()
 def create_task():
     """
@@ -354,12 +371,12 @@ def create_task():
         'due_date': created_task_instance.due_date.isoformat(),
         'created_at': created_task_instance.created_at.isoformat(),
         'last_updated_at': created_task_instance.last_updated_at.isoformat(),
-        'user_uuid': str(created_task_instance.user_uuid)
+        'user_uuid': str(created_task_instance.user_uuid),
     }
     return jsonify(created_task_data), 201
 
 
-@api_blueprint.route("/task", methods=["PATCH"])
+@api_blueprint.route('/task', methods=['PATCH'])
 @jwt_required()
 def update_task():
     """
@@ -434,11 +451,12 @@ def update_task():
         'due_date': task_instance.due_date.isoformat(),
         'created_at': task_instance.created_at.isoformat(),
         'last_updated_at': task_instance.last_updated_at.isoformat(),
-        'user_uuid': str(task_instance.user_uuid)
+        'user_uuid': str(task_instance.user_uuid),
     }
     return jsonify(updated_task_data), 200
 
-@api_blueprint.route("/task", methods=["DELETE"])
+
+@api_blueprint.route('/task', methods=['DELETE'])
 @jwt_required()
 def delete_task():
     """
@@ -467,9 +485,12 @@ def delete_task():
     if deleted:
         return '', 204
 
-    return jsonify({'message': 'could not delete task (non-existing or error during deletion)'}), 400
+    return jsonify(
+        {'message': 'could not delete task (non-existing or error during deletion)'}
+    ), 400
 
-@api_blueprint.route("/task", methods=["GET"])
+
+@api_blueprint.route('/task', methods=['GET'])
 @jwt_required()
 def get_one_task():
     """
@@ -500,12 +521,12 @@ def get_one_task():
         'status': task_instance.status,
         'due_date': task_instance.due_date.isoformat(),
         'created_at': task_instance.created_at.isoformat(),
-        'last_updated_at': task_instance.last_updated_at.isoformat()
+        'last_updated_at': task_instance.last_updated_at.isoformat(),
     }
     return jsonify(task_data), 200
 
 
-@api_blueprint.route("/tasks", methods=["GET"])
+@api_blueprint.route('/tasks', methods=['GET'])
 @jwt_required()
 def get_many_tasks():
     """
@@ -574,11 +595,24 @@ def get_many_tasks():
     start_due_date_str = data.get('start_due_date', None)
     end_due_date_str = data.get('end_due_date', None)
 
-    start_due_date = datetime.strptime(start_due_date_str, '%Y-%m-%d %H:%M') if start_due_date_str else None
-    end_due_date = datetime.strptime(end_due_date_str, '%Y-%m-%d %H:%M') if end_due_date_str else None
+    start_due_date = (
+        datetime.strptime(start_due_date_str, '%Y-%m-%d %H:%M')
+        if start_due_date_str
+        else None
+    )
+    end_due_date = (
+        datetime.strptime(end_due_date_str, '%Y-%m-%d %H:%M')
+        if end_due_date_str
+        else None
+    )
 
-    filtered_tasks_instances = Task.filter_by(user_uuids=user_uuids, uuids=task_uuids, status=status,
-                                              start_due_date=start_due_date, end_due_date=end_due_date)
+    filtered_tasks_instances = Task.filter_by(
+        user_uuids=user_uuids,
+        uuids=task_uuids,
+        status=status,
+        start_due_date=start_due_date,
+        end_due_date=end_due_date,
+    )
 
     """
     NOTE: "format_list_of_tasks" could be handled with a serializer (e.g. pydantic or marshmallow),
@@ -594,7 +628,9 @@ def get_many_tasks():
     if not page_number:
         result_tasks = filtered_tasks
     else:
-        paginated_tasks = paginate_query(resultset=filtered_tasks, page_number=page_number)
+        paginated_tasks = paginate_query(
+            resultset=filtered_tasks, page_number=page_number
+        )
         result_tasks = paginated_tasks
 
     return jsonify(result_tasks), 200

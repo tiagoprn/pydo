@@ -3,15 +3,18 @@ import pytest
 from pydo.factory import create_app
 from pydo.extensions import db
 
+
 @pytest.fixture
 def app():
     app = create_app()
     with app.app_context():
         yield app  # This ensures the app context is active during tests
 
+
 @pytest.fixture
 def test_client(app):
     return app.test_client()
+
 
 @pytest.fixture
 def db_session(app):
@@ -30,6 +33,7 @@ def db_session(app):
         transaction = connection.begin()
 
         from sqlalchemy.orm import scoped_session, sessionmaker
+
         session = scoped_session(sessionmaker(bind=connection))
         db.session = session
 
