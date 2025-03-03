@@ -108,7 +108,7 @@ lint-autofix:  ## Run the ruff linter to enforce our coding practices, and autof
 	@printf '\n FINISHED! \n --- \n'
 
 test: clean migrate  ## Run the test suite
-	@cd $(PROJECT_NAME) && py.test -s -vvv
+	@cd $(PROJECT_NAME) && py.test -s -v --disable-warnings
 
 coverage: clean migrate  ## Run the test coverage report
 	@py.test --cov-config .coveragerc --cov $(PROJECT_NAME) $(PROJECT_NAME) --cov-report term-missing

@@ -1,0 +1,8 @@
+[run]
+omit =
+    celery_worker.py
+    dev-server.py
+    gunicorn_settings.py
+    migrations/*
+    pydo/tests/*
+disable_warnings = all
