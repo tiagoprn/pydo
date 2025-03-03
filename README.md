@@ -73,6 +73,8 @@ See [this](ARCHITECTURE.md)
     - `PostgreSQL` as the database , with `SQLAlchemy` as the abstraction layer
     - Background task processing using `Celery` with `RabbitMQ` as the broker
 
+- API documentation: I integrated `Flasgger` (`Swagger` wrapper), using doctrings on the API endpoints to write the documentation. But due to a bug I could investigate deeply I cannot use the "Try It Out" functionality: every time we type the values on the fields, they get automatically deleted. So, to compensate that, you will find a `postman` collection file you can import into postman the postman site/app to play with the API: <./pydo.postman_collection.json>
+
 
 ## How to run this project locally (development environment)
 
@@ -229,13 +231,13 @@ $ pytest -s -k 'test_models' -vvv  --disable-warnings
 
 - populate the database with some tasks - using a `flask shell` script; add command to the Makefile
 
+- `make lint` (ruff) is showing some errors of not used references. When I removed some variables it pointed as not used the tests broke, so this must be investigated in more detail. But that is also proof the linter is doing its job ;)
+
 - Leverage the background workers which are ready to go to create tasks to send and e-mail when a new task is assigned or re-assigned to a user.
 
 - pre-commit hook (install `pre-commit` through `uv` and put command on the `Makefile` to do that)
 
 - Use "git-secret": migrate `.env.JWT_SECRET_KEY` to there
-
-- API documentation: I integrated `Flasgger` (`Swagger` wrapper), using doctrings on the API endpoints to write the documentation. But due to a bug I could investigate deeply I cannot use the "Try It Out" functionality: every time we type the values on the fields, they get automatically deleted.
 
 - Apply Clean/Hexagonal Architecture
 

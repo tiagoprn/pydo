@@ -1,0 +1,752 @@
+{
+	"info": {
+		"_postman_id": "b9747418-3911-41a5-b18c-970b5a4b099f",
+		"name": "pydo",
+		"description": "A tasks management solution\n\nContact Support:\n Email: tdvservices@proton.me",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7882996"
+	},
+	"item": [
+		{
+			"name": "compute",
+			"item": [
+				{
+					"name": "Put a compute task on the queue.",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/compute",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"compute"
+							]
+						},
+						"description": "<br/>Runs the compute function asynchronously,<br/>through sending a task to celery.<br/><br/>The function called is actually a celery task, that must have<br/>a celery worker up listening to the queue so that it can be executed.<br/>"
+					},
+					"response": [
+						{
+							"name": "message was put on the queue.",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/compute",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"compute"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "health-check",
+			"item": [
+				{
+					"name": "liveness",
+					"item": [
+						{
+							"name": "Used by k8s, to know if a Container is live.",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/health-check/liveness",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"health-check",
+										"liveness"
+									]
+								},
+								"description": "<br/>The kubelet uses liveness probes to know when to restart a Container. For<br/>example, liveness probes could catch a deadlock, where an application is<br/>running, but unable to make progress. Restarting a Container in such a<br/>state can help to make the application more available despite bugs. This<br/>will run ON REGULAR INTERVALS.<br/>"
+							},
+							"response": [
+								{
+									"name": "show the app as live, with its version and the current timestamp.",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/health-check/liveness",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"health-check",
+												"liveness"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "readiness",
+					"item": [
+						{
+							"name": "Used by k8s, to know when a container is ready.",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/health-check/readiness",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"health-check",
+										"readiness"
+									]
+								},
+								"description": "<br/>The kubelet uses readiness probes to know when a container<br/>is ready to start accepting traffic.<br/><br/>A Pod is considered ready when all of its Containers are ready.<br/>One use of this signal is to control which Pods are used as<br/>backends for Services.<br/>When a Pod is not ready, it is removed from Service load balancers.<br/>This will run ONLY ONCE.<br/>"
+							},
+							"response": [
+								{
+									"name": "show the app as ready, with its app version and type.",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/health-check/readiness",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"health-check",
+												"readiness"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "login",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "JWT temporary access token & JWT long-live refresh token",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "string",
+			"item": [
+				{
+					"name": "Put a generate random string task on the queue.",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/string",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"string"
+							]
+						},
+						"description": "<br/>Runs the generate random string function asynchronously,<br/>through sending a task to celery.<br/><br/>The function called is actually a celery task, that must have<br/>a celery worker up listening to the queue so that it can be executed.<br/>"
+					},
+					"response": [
+						{
+							"name": "message was put on the queue.",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/string",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"string"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "task",
+			"item": [
+				{
+					"name": "Delete task",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/task",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"task"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "successfully deleted",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/task",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"task"
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "not deleted (non-existing or error during deletion)",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/task",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"task"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "Get one task",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/task",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"task"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/task",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"task"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "Update task",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/task",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"task"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "task info",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/task",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"task"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "Create task",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/task",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"task"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "task info",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/task",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"task"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "tasks",
+			"item": [
+				{
+					"name": "Get many tasks",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"end_due_date\": \"<date>\",\n  \"page_number\": \"<int>\",\n  \"start_due_date\": \"<date>\",\n  \"status\": [\n    \"in_progress\",\n    \"pending\"\n  ],\n  \"user_uuids\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"uuids\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tasks",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tasks"
+							]
+						},
+						"description": "<br/>"
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/tasks",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"tasks"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "token",
+			"item": [
+				{
+					"name": "new",
+					"item": [
+						{
+							"name": "Get a new JWT temporary access token (expires in 1 hour)",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/token/new",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"token",
+										"new"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "JWT temporary access token",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/token/new",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"token",
+												"new"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "Get user info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "user info",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/user",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"user"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "Update user info",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "updated user info",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/user",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"user"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "Create a new user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "created user data.",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/user",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"user"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "welcome",
+			"item": [
+				{
+					"name": "{person}",
+					"item": [
+						{
+							"name": "Returns a welcome message with custom text.",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/welcome/:person",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"welcome",
+										":person"
+									],
+									"variable": [
+										{
+											"key": "person",
+											"value": "<string>",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "the welcome message.",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/welcome/:person",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"welcome",
+												":person"
+											],
+											"variable": [
+												{
+													"key": "person"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "/"
+		}
+	]
+}
