@@ -5,10 +5,6 @@
 - [-] API Layer
     - [-] Implement remaining endpoints:
         - [-] task
-            - [-] get
-                - [-] all
-                    - [ ] implement pagination on the API layer (customizable on .env; 3 per page for testing purposes)
-                - [ ] Explain the decision to not use a serializer to return tasks, and the "manual pagination" also
             - [ ] post
                 - [ ] A user_uuid can create a task for other user_uuid (add a test).
                       If the user_uuid is not informed, create for himself.
@@ -17,21 +13,23 @@
 - [ ] tests: test the coverage report (`Makefile` command)
 - [ ] Dockerize (update Dockerfile)
 - [ ] review ARCHITECTURE.md once more
+    - [ ] Background Tasks Layer
+        - [ ] Document how it works
+        - [ ] send an e-mail when a new task is created
+            - [ ] create a `services` module to abstract the notification backend (start with e-mail)
+                - [ ] Abstract class "Notification" with Abstract method "notify"
+                    - [ ] Derive an "E-mail notification" class from this one
 - [ ] review the README.md once more
-- [ ] Background Tasks Layer
-    - [ ] send an e-mail when a new task is created
-        - [ ] create a `services` module to abstract the notification backend (start with e-mail)
-            - [ ] Abstract class "Notification" with Abstract method "notify"
-                - [ ] Derive an "E-mail notification" class from this one
-    - [ ] ARCHITECTURE.md: Document how it will work
 
 ### DID
 
 - [-] API Layer
     - [-] Implement remaining endpoints:
         - [-] task
-            - [-] get
-                - [-] all
+            - [x] get
+                - [x] Explain the decision to not use a serializer to return tasks, and the "manual pagination" also
+                - [x] all
+                    - [x] implement pagination on the API layer (customizable on .env; 3 per page for testing purposes)
                     - [x] without filter
                     - [x] with filter
 
