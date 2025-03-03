@@ -383,14 +383,26 @@ def update_task():
       - name: due_date
         type: string (YYYY-MM-DD HH:MM)
         required: false
+      - name: user_uuid
+        description: this allows a user to reassign a task for another user
+        type: string
+        required: false
     responses:
       200:
         description: task info
     """
-    user_uuid = get_jwt_identity()
-    user = User.get_by(uuid=user_uuid)
 
+    """
+    NOTE: When finishing the API, I noticed that I forgot a very important
+          feature: that a user must be able to reassign a task for another user.
+          So, I changed the API to support this.
+
+          But due do time constraints I was not able to add a updated_by_user_uuid
+          field to the table, to keep track of who updated the task.
+          It must be done on a future version as an improvement.
+    """
     data = request.get_json()
+    user_uuid = data.get('user_uuid') or get_jwt_identity()
 
     task_uuid = data.get('uuid')
     title = data.get('title')
@@ -406,6 +418,8 @@ def update_task():
     if due_date:
         updated_data['due_date'] = datetime.strptime(due_date, '%Y-%m-%d %H:%M')
         # TODO: valid date and date >= datetime.utcnow()
+    if user_uuid:
+        updated_data['user_uuid'] = user_uuid
 
     # TODO: validate status
 
@@ -419,7 +433,8 @@ def update_task():
         'status': task_instance.status,
         'due_date': task_instance.due_date.isoformat(),
         'created_at': task_instance.created_at.isoformat(),
-        'last_updated_at': task_instance.last_updated_at.isoformat()
+        'last_updated_at': task_instance.last_updated_at.isoformat(),
+        'user_uuid': str(task_instance.user_uuid)
     }
     return jsonify(updated_task_data), 200
 

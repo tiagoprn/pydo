@@ -3,11 +3,6 @@
 ### DOING
 
 - [-] API Layer
-    - [-] Implement remaining endpoints:
-        - [-] task
-            - [ ] post
-                - [ ] A user_uuid can create a task for other user_uuid (add a test).
-                      If the user_uuid is not informed, create for himself.
     - [ ] Manually test interacting with the API on swagger (make sure everything is working)
         - [ ] Update the docs with the link to access swagger API
 - [ ] tests: test the coverage report (`Makefile` command)
@@ -24,8 +19,11 @@
 ### DID
 
 - [-] API Layer
-    - [-] Implement remaining endpoints:
-        - [-] task
+    - [x] Implement remaining endpoints:
+        - [x] task
+            - [x] post
+                - [x] A user_uuid can create a task for other user_uuid (add a test).
+                      If the user_uuid is not informed, create for himself.
             - [x] get
                 - [x] Explain the decision to not use a serializer to return tasks, and the "manual pagination" also
                 - [x] all

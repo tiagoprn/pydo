@@ -247,13 +247,12 @@ class TestTaskAPI():
         assert response_data.pop('uuid') is not None
         assert response_data == expected_response
 
-    def test_update_task_successfully_through_api(self, test_client, db_session):
+    def test_update_task_successfully_with_no_task_user_reassign_through_api(self, test_client, db_session):
         user_info = self.create_user_and_login(test_client=test_client, db_session=db_session)
         user_uuid = user_info['user_uuid']
         request_headers = user_info['request_headers']
 
         create_payload = {
-            'user_uuid': user_uuid,
             'title': 'Study for the test',
             'description': 'Mathematics 101',
             'due_date': '2025-03-31 11:00'
@@ -279,6 +278,52 @@ class TestTaskAPI():
             'due_date': '2025-03-31T11:30:00',
             'status': 'completed',
             'title': 'Study for the test * updated',
+            'user_uuid': user_uuid
+        }
+        assert response_data.pop('created_at') is not None
+        assert response_data.pop('last_updated_at') is not None
+        assert response_data == expected_response
+
+    def test_update_task_successfully_with_task_user_reassign_through_api(self, test_client, db_session):
+        user_info = self.create_user_and_login(test_client=test_client, db_session=db_session)
+        user_uuid = user_info['user_uuid']
+        request_headers = user_info['request_headers']
+
+        create_payload = {
+            'title': 'Study for the test',
+            'description': 'Mathematics 101',
+            'due_date': '2025-03-31 11:00'
+        }
+        create_response = test_client.post('/task', headers=request_headers, json=create_payload)
+        assert create_response.status_code == 201
+
+        user_uuid_to_assign_to_response = self.submit_create_user_request(test_client=test_client,
+                                                                          username='deanna_troy',
+                                                                          email='dt@startrek.com',
+                                                                          password='87654321')
+
+        user_uuid_to_assign_to = user_uuid_to_assign_to_response.json['uuid']
+
+        payload = {
+            'uuid': create_response.json['uuid'],
+            'title': 'Study for the test * updated',
+            'description': 'Mathematics 101 * updated',
+            'due_date': '2025-03-31 11:30',
+            'status': 'completed',
+            'user_uuid': user_uuid_to_assign_to
+        }
+        update_response = test_client.patch('/task', headers=request_headers, json=payload)
+        assert update_response.status_code == 200
+
+        response_data = update_response.json
+
+        expected_response = {
+            'uuid': create_response.json['uuid'],
+            'description': 'Mathematics 101 * updated',
+            'due_date': '2025-03-31T11:30:00',
+            'status': 'completed',
+            'title': 'Study for the test * updated',
+            'user_uuid': user_uuid_to_assign_to
         }
         assert response_data.pop('created_at') is not None
         assert response_data.pop('last_updated_at') is not None

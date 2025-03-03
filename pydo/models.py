@@ -99,7 +99,7 @@ class Task(db.Model):
         db.session.refresh(new_task)
         return new_task
 
-    def update(self, title: str='', description: str='', status: str='', due_date: datetime=None):
+    def update(self, title: str='', description: str='', status: str='', due_date: datetime=None, user_uuid: str=''):
         if not(title or description or status or due_date):
             return
 
@@ -112,8 +112,11 @@ class Task(db.Model):
         if status:
             self.status = status
 
-        if self.due_date:
+        if due_date:
             self.due_date = due_date
+
+        if user_uuid:
+            self.user_uuid = user_uuid
 
         self.last_updated_at = datetime.utcnow()
         db.session.add(self)
