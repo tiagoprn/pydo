@@ -71,7 +71,7 @@ See [this](ARCHITECTURE.md)
 - Provides a `docker-compose.yml` to set up the development environment:
     - configured with the app required infrastructure (postgresql, rabbitmq)
     - `PostgreSQL` as the database , with `SQLAlchemy` as the abstraction layer
-    - Background task processing using `Celery` with `RabbitMQ` as the broker
+    - Background task processing using `Celery` with `RabbitMQ` as the broker (see [ARCHITECTURE.md](ARCHITECTURE.md) for more details).
 
 - API documentation: I integrated `Flasgger` (`Swagger` wrapper), using doctrings on the API endpoints to write the documentation. But due to a bug I could not deeply investigate I cannot use the "Try It Out" functionality: every time we type the values on the fields, they get automatically deleted. So, to compensate that, you will find a [postman collection file you can import into postman the postman site/app to play with the API](./pydo.postman_collection.json)
 

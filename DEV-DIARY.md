@@ -1,17 +1,18 @@
 ## 2025-03-03
 
-### DOING
-
-- [ ] review ARCHITECTURE.md once more
-    - [ ] Background Tasks Layer
-        - [ ] Document how it works
-
 ### DID
 
+- [x] review ARCHITECTURE.md once more
+    - [x] Background Tasks Layer
+        - [x] Document how it works
 - [x] apply ruff; re-run the tests
 - [x] review the README.md once more
 - [x] tests: test the coverage report (`Makefile` command)
-- [-] API Layer
+- [x] API Layer
+    - [x] Manually test interacting with the API on swagger (make sure everything is working)
+        - [A] Update the docs with the link to access swagger API
+        - [A] swagger is not allowing interacting with the API, generate and provide a postman collection
+        - [x] Provide a postman collection.
     - [x] Implement remaining endpoints:
         - [x] task
             - [x] post
@@ -29,10 +30,6 @@
 ### DID
 
 - [-] API Layer
-    - [x] Manually test interacting with the API on swagger (make sure everything is working)
-        - [A] Update the docs with the link to access swagger API
-        - [A] swagger is not allowing interacting with the API, generate and provide a postman collection
-        - [x] Provide a postman collection.
     - [x] Implement remaining endpoints:
         - [x] task
             - [x] get

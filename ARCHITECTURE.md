@@ -102,4 +102,13 @@ This library provides:
 
 ## Background Processing Layer (RabbitMQ with workers)
 
-TBD
+This layer is responsible for running tasks that will not fit the request-response model due to taking too long to execute.
+
+The infrastructure to run Celery with RabbitMQ as the broker is fully functional, but due to time constraints there is no "useful" background task in the project yet that leverages it.
+
+But there are 2 API endpoints that can be triggered via API to send a task to the queue:
+
+- /compute
+- /string
+
+You can view them on the API docs using flasgger, but to interact with it you will have to use the [postman collection file](./pydo.postman_collection.json).
