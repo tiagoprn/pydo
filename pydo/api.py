@@ -5,7 +5,7 @@ from random import randint
 import flask
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
-from pydo.commons import format_list_of_tasks
+from pydo.commons import format_list_of_tasks, paginate_query
 from pydo.exceptions import APIError
 from pydo.models import User, Task
 from pydo.settings import VERSION
@@ -492,30 +492,39 @@ def get_many_tasks():
         schema:
           type: object
           properties:
+            page_number:
+              type: int
+              description: this indicates we must paginate to return the records on a given page
+              required: false
             user_uuids:
               type: array
               items:
                 type: string
               description: List of user UUIDs to filter tasks by
+              required: false
             uuids:
               type: array
               items:
                 type: string
               description: List of task UUIDs to retrieve
+              required: false
             status:
               type: array
               items:
                 type: string
                 enum: [pending, completed, in_progress]
               description: Filter tasks by status
+              required: false
             start_due_date:
               type: string
               format: date
               description: Filter tasks with due date on or after this date (YYYY-MM-DD HH:MM)
+              required: false
             end_due_date:
               type: string
               format: date
               description: Filter tasks with due date on or before this date (YYYY-MM-DD HH:MM)
+              required: false
           example:
             user_uuids: ["U123ABC", "U456DEF"]
             uuids: ["T78F", "G32P"]
@@ -540,10 +549,24 @@ def get_many_tasks():
     start_due_date = datetime.strptime(start_due_date_str, '%Y-%m-%d %H:%M') if start_due_date_str else None
     end_due_date = datetime.strptime(end_due_date_str, '%Y-%m-%d %H:%M') if end_due_date_str else None
 
-    # TODO: Use limit...offset on the query to paginate
     filtered_tasks_instances = Task.filter_by(user_uuids=user_uuids, uuids=task_uuids, status=status,
                                               start_due_date=start_due_date, end_due_date=end_due_date)
 
+    """
+    NOTE: "format_list_of_tasks" could be handled with a serializer (e.g. pydantic or marshmallow),
+          and "paginate_query" could be handled directly on the database query above to improve
+          performance. But due to:
+              - the simplicity of the current requirements;
+              - the time constraints of this initial implementation
+          , both will be done on future versions.
+    """
     filtered_tasks = format_list_of_tasks(tasks=filtered_tasks_instances)
 
-    return jsonify(filtered_tasks), 200
+    page_number = data.get('page_number')
+    if not page_number:
+        result_tasks = filtered_tasks
+    else:
+        paginated_tasks = paginate_query(resultset=filtered_tasks, page_number=page_number)
+        result_tasks = paginated_tasks
+
+    return jsonify(result_tasks), 200

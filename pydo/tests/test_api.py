@@ -429,3 +429,45 @@ class TestTaskAPI():
             response_uuids.append(record.pop('uuid'))
 
         assert set(response_uuids) == set(uuids)
+
+    def test_get_tasks_with_no_filters_and_pagination_must_retrieve_page_tasks(self, test_client, db_session):
+        # GIVEN
+        uuids = create_tasks_for_various_users()
+        assert len(uuids) == 15
+
+        # WHEN
+        login_response = self.submit_login_request(test_client=test_client)
+        access_token = login_response.json['access_token']
+        headers = {'Authorization': f'Bearer {access_token}'}
+        request_params = {
+            "user_uuids": [],
+            "status": [],
+            "start_due_date": '',
+            "end_due_date": '',
+            "page_number": 2,
+        }
+        get_response = test_client.get('/tasks', headers=headers, json=request_params)
+        assert get_response.status_code == 200
+
+        # THEN
+        response_data = get_response.json
+
+        assert response_data['current_page'] == 2
+        assert response_data['has_next'] is True
+        assert response_data['has_prev'] is True
+        assert response_data['total_pages'] == 3
+
+        records = response_data['records']
+        assert len(records) == 5
+
+        response_uuids = []
+        for record in records:
+            expected_keys = {'created_at', 'description', 'due_date', 'last_updated_at', 'status',
+                             'title', 'user_name', 'user_uuid', 'uuid'}
+            assert set(record.keys()) == expected_keys
+            for key in expected_keys:
+                record[key] is not None
+
+            response_uuids.append(record.pop('uuid'))
+
+        assert set(response_uuids) == {uuids[5], uuids[6], uuids[7], uuids[8], uuids[9]}
