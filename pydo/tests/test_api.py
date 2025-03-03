@@ -1,7 +1,9 @@
+from datetime import datetime, timedelta
 from typing import Dict
 from unittest import mock
 
 from pydo.models import User, Task
+from pydo.tests.utils import create_multi_users, create_tasks_for_various_users
 
 
 def test_compute_sent_to_queue(test_client):
@@ -292,3 +294,138 @@ class TestTaskAPI():
         assert response_data.pop('created_at') is not None
         assert response_data.pop('last_updated_at') is not None
         assert response_data == expected_response
+
+    def test_get_tasks_with_filters_for_single_user_must_retrieve_correct_tasks(self, test_client, db_session):
+        # GIVEN
+        uuids = create_tasks_for_various_users()
+        assert len(uuids) == 15
+
+        first_user = User.get_by(username='jean_luc_picard')
+
+        filter_query_params = {
+            "user_uuids": [first_user.uuid],
+            "status": ["pending", "in_progress"],
+            "start_due_date": datetime.strptime("2025-01-02 00:00", "%Y-%m-%d %H:%M"),
+            "end_due_date": datetime.strptime("2025-01-04 23:59", "%Y-%m-%d %H:%M")
+        }
+        jean_luc_picard_tasks = Task.filter_by(**filter_query_params)
+
+        expected_uuids_values = {uuids[0], uuids[1]}
+        uuid_values = {str(task.uuid) for task in jean_luc_picard_tasks}
+        assert uuid_values == expected_uuids_values
+
+        # WHEN
+        login_response = self.submit_login_request(test_client=test_client)
+        access_token = login_response.json['access_token']
+        headers = {'Authorization': f'Bearer {access_token}'}
+        request_params = {
+            "user_uuids": [first_user.uuid],
+            "status": ["pending", "in_progress"],
+            "start_due_date": "2025-01-02 00:00",
+            "end_due_date": "2025-01-04 23:59"
+        }
+        get_response = test_client.get('/tasks', headers=headers, json=request_params)
+        assert get_response.status_code == 200
+
+        # THEN
+        response_data = get_response.json
+
+        assert len(response_data) == 2
+        response_uuids = []
+        for record in response_data:
+            expected_keys = {'created_at', 'description', 'due_date', 'last_updated_at', 'status',
+                             'title', 'user_name', 'user_uuid', 'uuid'}
+            assert set(record.keys()) == expected_keys
+            for key in expected_keys:
+                record[key] is not None
+
+            response_uuids.append(record.pop('uuid'))
+
+        assert set(response_uuids) == expected_uuids_values
+
+
+    def test_get_tasks_with_filters_for_multi_users_must_retrieve_correct_tasks(self, test_client, db_session):
+        # GIVEN
+        uuids = create_tasks_for_various_users()
+        assert len(uuids) == 15
+
+        first_user = User.get_by(username='jean_luc_picard')
+        second_user = User.get_by(username='william_riker')
+        third_user = User.get_by(username='deanna_troy')
+
+
+        filter_query_params = {
+            "user_uuids": [first_user.uuid, second_user.uuid, third_user.uuid],
+            "status": ["completed"],
+            "start_due_date": datetime.strptime('2025-01-02 13:00', '%Y-%m-%d  %H:%M'),
+            "end_due_date": datetime.strptime('2025-01-06 10:20', '%Y-%m-%d %H:%M')
+        }
+
+        multi_user_tasks = Task.filter_by(**filter_query_params)
+
+        expected_uuids_values = {uuids[4], uuids[6], uuids[12]}
+        uuid_values = {str(task.uuid) for task in multi_user_tasks}
+        assert uuid_values == expected_uuids_values
+
+        # WHEN
+        login_response = self.submit_login_request(test_client=test_client)
+        access_token = login_response.json['access_token']
+        headers = {'Authorization': f'Bearer {access_token}'}
+        request_params = {
+            "user_uuids": [first_user.uuid, second_user.uuid, third_user.uuid],
+            "status": ["completed"],
+            "start_due_date": '2025-01-02 13:00',
+            "end_due_date": '2025-01-06 10:20'
+        }
+        get_response = test_client.get('/tasks', headers=headers, json=request_params)
+        assert get_response.status_code == 200
+
+        # THEN
+        response_data = get_response.json
+
+        assert len(response_data) == 3
+        response_uuids = []
+        for record in response_data:
+            expected_keys = {'created_at', 'description', 'due_date', 'last_updated_at', 'status',
+                             'title', 'user_name', 'user_uuid', 'uuid'}
+            assert set(record.keys()) == expected_keys
+            for key in expected_keys:
+                record[key] is not None
+
+            response_uuids.append(record.pop('uuid'))
+
+        assert set(response_uuids) == expected_uuids_values
+
+    def test_get_tasks_with_no_filters_must_retrieve_all_tasks(self, test_client, db_session):
+        # GIVEN
+        uuids = create_tasks_for_various_users()
+        assert len(uuids) == 15
+
+        # WHEN
+        login_response = self.submit_login_request(test_client=test_client)
+        access_token = login_response.json['access_token']
+        headers = {'Authorization': f'Bearer {access_token}'}
+        request_params = {
+            "user_uuids": [],
+            "status": [],
+            "start_due_date": '',
+            "end_due_date": ''
+        }
+        get_response = test_client.get('/tasks', headers=headers, json=request_params)
+        assert get_response.status_code == 200
+
+        # THEN
+        response_data = get_response.json
+
+        assert len(response_data) == 15
+        response_uuids = []
+        for record in response_data:
+            expected_keys = {'created_at', 'description', 'due_date', 'last_updated_at', 'status',
+                             'title', 'user_name', 'user_uuid', 'uuid'}
+            assert set(record.keys()) == expected_keys
+            for key in expected_keys:
+                record[key] is not None
+
+            response_uuids.append(record.pop('uuid'))
+
+        assert set(response_uuids) == set(uuids)

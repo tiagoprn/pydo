@@ -5,6 +5,7 @@ from random import randint
 import flask
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
+from pydo.commons import format_list_of_tasks
 from pydo.exceptions import APIError
 from pydo.models import User, Task
 from pydo.settings import VERSION
@@ -33,6 +34,8 @@ def call_compute_task():
     The function called is actually a celery task, that must have
     a celery worker up listening to the queue so that it can be executed.
     ---
+    tags:
+      - Celery background task
     responses:
       200:
         description: message was put on the queue.
@@ -59,6 +62,8 @@ def call_generate_random_string_task():
     The function called is actually a celery task, that must have
     a celery worker up listening to the queue so that it can be executed.
     ---
+    tags:
+      - Celery background task
     responses:
       200:
         description: message was put on the queue.
@@ -83,6 +88,8 @@ def readiness():
     When a Pod is not ready, it is removed from Service load balancers.
     This will run ONLY ONCE.
     ---
+    tags:
+      - Healthcheck
     responses:
       200:
         description: show the app as ready, with its app version and type.
@@ -109,6 +116,8 @@ def liveness():
     state can help to make the application more available despite bugs. This
     will run ON REGULAR INTERVALS.
     ---
+    tags:
+      - Healthcheck
     responses:
       200:
         description: show the app as live, with its version
@@ -128,6 +137,8 @@ def welcome(person: str):
     """
     Returns a welcome message with custom text.
     ---
+    tags:
+      - Example
     parameters:
       - name: person
         in: path
@@ -146,6 +157,8 @@ def login():
     """
     Login
     ---
+    tags:
+      - JWT Auth
     parameters:
       - name: email
         type: string
@@ -183,6 +196,8 @@ def token_refresh():
     """
     Get a new JWT temporary access token (expires in 1 hour)
     ---
+    tags:
+      - JWT Auth
     responses:
       200:
         description: JWT temporary access token
@@ -197,6 +212,8 @@ def create_user():
     """
     Create a new user
     ---
+    tags:
+      - Users
     parameters:
       - name: username
         type: string
@@ -224,6 +241,8 @@ def get_user():
     """
     Get user info
     ---
+    tags:
+      - Users
     responses:
       200:
         description: user info
@@ -240,6 +259,8 @@ def update_user():
     """
     Update user info
     ---
+    tags:
+      - Users
     parameters:
       - name: email
         type: string
@@ -270,6 +291,8 @@ def create_task():
     """
     Create task
     ---
+    tags:
+      - Tasks
     parameters:
       - name: title
         type: string
@@ -329,6 +352,8 @@ def update_task():
     """
     Update task
     ---
+    tags:
+      - Tasks
     parameters:
       - name: uuid
         type: string
@@ -391,6 +416,8 @@ def delete_task():
     """
     Delete task
     ---
+    tags:
+      - Tasks
     parameters:
       - name: uuid
         type: string
@@ -420,6 +447,8 @@ def get_one_task():
     """
     Get one task
     ---
+    tags:
+      - Tasks
     parameters:
       - name: uuid
         type: string
@@ -453,19 +482,68 @@ def get_one_task():
 def get_many_tasks():
     """
     Get many tasks
+
     ---
+    tags:
+      - Tasks
     parameters:
-      - name: uuid
-        type: string
-        required: true
+      - in: body
+        name: body
+        schema:
+          type: object
+          properties:
+            user_uuids:
+              type: array
+              items:
+                type: string
+              description: List of user UUIDs to filter tasks by
+            uuids:
+              type: array
+              items:
+                type: string
+              description: List of task UUIDs to retrieve
+            status:
+              type: array
+              items:
+                type: string
+                enum: [pending, completed, in_progress]
+              description: Filter tasks by status
+            start_due_date:
+              type: string
+              format: date
+              description: Filter tasks with due date on or after this date (YYYY-MM-DD HH:MM)
+            end_due_date:
+              type: string
+              format: date
+              description: Filter tasks with due date on or before this date (YYYY-MM-DD HH:MM)
+          example:
+            user_uuids: ["U123ABC", "U456DEF"]
+            uuids: ["T78F", "G32P"]
+            status: ["pending", "completed"]
+            start_due_date: "2025-01-05 00:00"
+            end_due_date: "2025-01-15 23:59"
     responses:
       200:
-        description: successfully deleted
+        description: success
     """
     user_uuid = get_jwt_identity()
     user = User.get_by(uuid=user_uuid)
 
     data = request.get_json()
-    task_uuid = data.get('uuid')
 
-    # TODO: implement, with filters support
+    task_uuids = data.get('uuids', [])
+    user_uuids = data.get('user_uuids', [])
+    status = data.get('status', [])
+    start_due_date_str = data.get('start_due_date', None)
+    end_due_date_str = data.get('end_due_date', None)
+
+    start_due_date = datetime.strptime(start_due_date_str, '%Y-%m-%d %H:%M') if start_due_date_str else None
+    end_due_date = datetime.strptime(end_due_date_str, '%Y-%m-%d %H:%M') if end_due_date_str else None
+
+    # TODO: Use limit...offset on the query to paginate
+    filtered_tasks_instances = Task.filter_by(user_uuids=user_uuids, uuids=task_uuids, status=status,
+                                              start_due_date=start_due_date, end_due_date=end_due_date)
+
+    filtered_tasks = format_list_of_tasks(tasks=filtered_tasks_instances)
+
+    return jsonify(filtered_tasks), 200

@@ -2,9 +2,11 @@ import os
 import re
 from functools import lru_cache
 from pathlib import Path
+from typing import List, Dict
 
 from sqlalchemy.orm import Query
 from sqlalchemy.dialects import postgresql
+
 
 def get_query_raw_sql(query: Query) -> str:
     """
@@ -40,6 +42,32 @@ def get_version_file_path() -> str:
 
     return file_path
 
+def format_list_of_tasks(tasks: List["Task"]) -> List[Dict]:  # noqa
+    """
+    Given tasks, iterate through each one and format it as a python dict.
+
+    This is mainly intended to be used by the API.
+    """
+    # NOTE: imported here to avoid a circular dependency.
+    #       Maybe I should move this as a static method
+    #       of the Task model? Not sure, so will keep it here for now.
+    from pydo.models import Task  # noqa
+
+    formatted_tasks = []
+    for task in tasks:
+        formatted_task = {
+            "uuid": str(task.uuid),
+            "title": task.title,
+            "description": task.description,
+            "status": task.status,
+            "due_date": task.due_date.isoformat(),
+            "created_at": task.created_at.isoformat(),
+            "last_updated_at": task.last_updated_at.isoformat(),
+            "user_uuid": task.user_uuid,
+            "user_name": task.user.username
+        }
+        formatted_tasks.append(formatted_task)
+    return formatted_tasks
 
 @lru_cache(maxsize=None)
 def get_app_version():

@@ -1,6 +1,6 @@
 import re
 from datetime import datetime
-from typing import List, Union
+from typing import List, Union, Dict
 from uuid import uuid4
 
 from sqlalchemy import Enum
@@ -23,6 +23,10 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_updated_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # NOTE: using backref here because it will automatically create the reverse side so on the Task model
+    #       so I can get e.g. "task_instance.user.email".
+    #       The alternative would be to use back_populates to make this explicit on both models
+    #       (so I would need to declare the relationship on both models)
     tasks = db.relationship("Task", backref="user", lazy=True)
 
     def hash(self, password: str) -> object:
@@ -143,6 +147,9 @@ class Task(db.Model):
         The filtering strategy combines SQLAlchemy's filter_by() for simple equality conditions
         and filter() for more complex conditions like lists and ranges.
         """
+        if (not user_uuids) and (not uuids) and (not status) and (not start_due_date) and (not end_due_date):
+            return Task.query.all()
+
         filters_data = {}
 
         # Handle simple equality filters
