@@ -2,11 +2,8 @@
 
 ### DOING
 
-- [-] API Layer
-    - [ ] Manually test interacting with the API on swagger (make sure everything is working)
-        - [ ] Update the docs with the link to access swagger API
 - [ ] tests: test the coverage report (`Makefile` command)
-- [ ] Dockerize (update Dockerfile)
+- [ ] apply ruff; re-run the tests
 - [ ] review ARCHITECTURE.md once more
     - [ ] Background Tasks Layer
         - [ ] Document how it works
@@ -14,6 +11,11 @@
             - [ ] create a `services` module to abstract the notification backend (start with e-mail)
                 - [ ] Abstract class "Notification" with Abstract method "notify"
                     - [ ] Derive an "E-mail notification" class from this one
+- [-] API Layer
+    - [-] Manually test interacting with the API on swagger (make sure everything is working)
+        - [-] Update the docs with the link to access swagger API
+        - [-] swagger is not allowing interacting with the API, generate and provide a postman collection
+- [ ] Dockerize (update Dockerfile)
 - [ ] review the README.md once more
 
 ### DID

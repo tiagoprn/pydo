@@ -1,12 +1,11 @@
 # pydo
 
-**DESCRIPTION:** A tasks management solution
+This project was bootstrapped from this cookiecutter template of mine: <https://github.com/tiagoprn/celery-db-flask-cookiecutter>.
 
-created from: <https://github.com/tiagoprn/celery-db-flask-cookiecutter>
 
 ## Overview
 
-This project provides a RESTful API for a simple task management system  using Flask.
+This project provides a RESTful API for a simple task management system using Flask.
 
 The API allow users to:
 
@@ -15,9 +14,37 @@ The API allow users to:
 - Mark tasks as completed.
 - Filter tasks based on status and due date.
 
+
+## Test coverage
+
+``` bash
+
+---------- coverage: platform linux, python 3.13.1-final-0 -----------
+Name                 Stmts   Miss  Cover   Missing
+--------------------------------------------------
+pydo/__init__.py         3      0   100%
+pydo/api.py            162      9    94%   21-23, 72-74, 151-152, 190, 470
+pydo/commons.py         47      8    83%   23-27, 40-41, 91, 93
+pydo/exceptions.py       5      3    40%   3-5
+pydo/extensions.py      49      0   100%
+pydo/factory.py         14      0   100%
+pydo/models.py         122      5    96%   69, 131, 135-136, 170
+pydo/settings.py        34      2    94%   15, 52
+pydo/tasks.py           15      3    80%   21-28
+--------------------------------------------------
+TOTAL                  451     30    93%
+
+
+Results (17.11s):
+      32 passed
+
+```
+
+
 ## Architecture
 
 See [this](ARCHITECTURE.md)
+
 
 ## Technologies
 
@@ -33,59 +60,23 @@ See [this](ARCHITECTURE.md)
     - Pagination for listing tasks.
     - Filtering tasks by status and due date.
 
-- Uses `PostgreSQL` as the database (containerized - `docker` or `podman`), with `SQLAlchemy` as the abstraction layer
-
 - `pytest` for unit tests, with some plugins to ease presentation.
 
-- tests coverage report (80% test coverage minimum)
-
-- Provides a `Dockerfile` and `docker-compose.yml` to set up the app and database locally:
-    - docker/podman image generation (properly tagged)
-    - docker-compose configured with the app required infrastructure (rabbitmq as celery broker, postgresql as the database)
-
-- API documentation using `Flasgger` (`Swagger` wrapper) as documentation for the API, using doctrings on the API endpoints to write the documentation.
-
-- Rate limiting to prevent API abuse.
-
-- Background task processing using `Celery` with `RabbitMQ` as the broker
-
 - `Makefile` to wrap the most common operations and ease project management, with commands to run the development server, shell, etc...
-
-- `gunicorn` configured to run the project in the production environment.
 
 - code style and quality: `ruff` as the linter and formatter (customized with `pyproject.toml`)
 
 - environment variables for configuration (`.env` file)
 
-## Potential enhancements
+- Provides a `docker-compose.yml` to set up the development environment:
+    - configured with the app required infrastructure (postgresql, rabbitmq)
+    - `PostgreSQL` as the database , with `SQLAlchemy` as the abstraction layer
+    - Background task processing using `Celery` with `RabbitMQ` as the broker
 
-- `PATCH /user`: implement current password confirmation and new password confirmation (2nd time to check their are equal)
-
-- implement user removal
-
-- RBAC implementation (an admin user could create new users, update other users information, etc...)
-
-- Audit trail for changes on user/task tables
-
-- implement rate limiting
-
-- populate the database with some tasks - using a `flask shell` script; add command to the Makefile
-
-- pre-commit hook (install `pre-commit` through `uv` and put command on the `Makefile` to do that)
-
-- Use "git-secret": migrate `.env.JWT_SECRET_KEY` to there
-
-- CI pipeline (github actions):
-    - ruff lint/format check
-    - tests (with coverage report)
-
-- Apply Clean/Hexagonal Architecture
 
 ## How to run this project locally (development environment)
 
-### OPTION 1 - USING AN UV VIRTUALENV:
-
-- This requires the installation of python's uv package manager. To install it:
+- This requires the installation of python's `uv` package manager. To install it:
 
 ``` bash
 
@@ -96,17 +87,26 @@ $ curl -LsSf https://astral.sh/uv/install.sh | sh
 - Create a virtualenv to the project. If you want to use the default provided using uv on the Makefile:
 
 ``` bash
+
 $ make dev-setup-uv
+
 ```
 
 - Install the development requirements (also using uv):
 
-`$ make requirements`
+``` bash
+
+$ make requirements
+
+```
+
 
 - Run the make command to create the sample configuration file:
 
 ``` bash
+
 $ make init-env
+
 ```
 
 - Now, the development infrastructure containers (postgressql, rabbitmq) must be started:
@@ -120,8 +120,10 @@ $ make dev-infra-start
 - Generate the db migrations and run them:
 
 ``` bash
+
 $ make migrations
 $ make migrate
+
 ```
 
 - Run the formatter and linter:
@@ -139,61 +141,48 @@ $ make dev-setup-ruff
 This will install ruff globally, but do not worry. It needs to be explicitly called and you can customize its' behavior per project if you need.
 
 ``` bash
+
 $ make style; make style-autofix && make style
 $ make lint; make lint-autofix && make lint
+
 ```
 
 - Run the test suite:
 
 ``` bash
+
 $ make test
+
 ```
 
 - Start the development server:
 
-`$ make dev-runserver`
+``` bash
 
-... or start the production server (gunicorn):
+$ make dev-runserver
 
-`$ make runserver`
+```
+
 
 Then, check the api documentation URL:
 
-`$ make dev-api-docs`
+``` bash
+
+$ make dev-api-docs
+
+```
+
 
 - Start the development worker:
 
-`$ make dev-runworker`
-
-... or start the production worker (gunicorn):
-
-`$ make runworker`
-
-### OPTION 2 - BUILD AND RUN FROM DOCKER/PODMAN
-
-(TODO: this needs to be tested)
-
 ``` bash
-$ make docker-build-local-app-container && make docker-run-local-app-container
 
-or...
+$ make dev-runworker
 
-$ make podman-build-local-app-container && make podman-run-local-app-container
 ```
 
-Then, check the api documentation:
-
-`$ make dev-api-docs`
 
 ## etc
-
-### run a specific test with pytest
-
-``` bash
-
-$ pytest -s -k 'test_models' -vvv  --disable-warnings
-
-```
 
 ### pgcli
 
@@ -214,3 +203,43 @@ To connect to the database (using pgcli):
 $ make dev-pgcli
 
 ```
+
+### run a specific test with pytest
+
+``` bash
+
+$ pytest -s -k 'test_models' -vvv  --disable-warnings
+
+```
+
+
+## Potential enhancements
+
+- `PATCH /user`: implement current password confirmation and new password confirmation (2nd time to check their are equal)
+
+- implement user removal
+
+- RBAC implementation (an admin user could create new users, update other users information, etc...)
+
+- Audit trail for changes on user/task tables
+
+- implement rate limiting
+
+- populate the database with some tasks - using a `flask shell` script; add command to the Makefile
+
+- Provides a `Dockerfile`
+    - docker/podman image generation (properly tagged)
+
+- API documentation using `Flasgger` (`Swagger` wrapper) as documentation for the API, using doctrings on the API endpoints to write the documentation.
+
+- `gunicorn` configured to run the project in the production environment.
+
+- pre-commit hook (install `pre-commit` through `uv` and put command on the `Makefile` to do that)
+
+- Use "git-secret": migrate `.env.JWT_SECRET_KEY` to there
+
+- CI pipeline (github actions):
+    - ruff lint/format check
+    - tests (with coverage report)
+
+- Apply Clean/Hexagonal Architecture
