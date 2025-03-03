@@ -213,9 +213,11 @@ $ pytest -s -k 'test_models' -vvv  --disable-warnings
 ```
 
 
-## Potential enhancements
+## Future enhancements
 
-- `PATCH /user`: implement current password confirmation and new password confirmation (2nd time to check their are equal)
+### Application
+
+- `PATCH /user`: implement current password confirmation and new password confirmation (2nd time to check their must be equal)
 
 - implement user removal
 
@@ -227,19 +229,22 @@ $ pytest -s -k 'test_models' -vvv  --disable-warnings
 
 - populate the database with some tasks - using a `flask shell` script; add command to the Makefile
 
-- Provides a `Dockerfile`
-    - docker/podman image generation (properly tagged)
-
-- API documentation using `Flasgger` (`Swagger` wrapper) as documentation for the API, using doctrings on the API endpoints to write the documentation.
-
-- `gunicorn` configured to run the project in the production environment.
+- Leverage the background workers which are ready to go to create tasks to send and e-mail when a new task is assigned or re-assigned to a user.
 
 - pre-commit hook (install `pre-commit` through `uv` and put command on the `Makefile` to do that)
 
 - Use "git-secret": migrate `.env.JWT_SECRET_KEY` to there
 
+- API documentation: I integrated `Flasgger` (`Swagger` wrapper), using doctrings on the API endpoints to write the documentation. But due to a bug I could investigate deeply I cannot use the "Try It Out" functionality: every time we type the values on the fields, they get automatically deleted.
+
+- Apply Clean/Hexagonal Architecture
+
+### Infrastructure
+
+- Functionalities provided by bootstrapping from my cookiecutter template but could not be finished on the initial implementation:
+    - Customize the `Dockerfile` provided by , so that the project can be built. Keep generating docker/podman image generation (properly tagged).
+    - Make sure `gunicorn` is properly configured to run the project in the production environment.
+
 - CI pipeline (github actions):
     - ruff lint/format check
     - tests (with coverage report)
-
-- Apply Clean/Hexagonal Architecture
