@@ -191,6 +191,5 @@ class Task(db.Model):
             query = query.filter(Task.due_date <= end_due_date)
 
         raw_query = get_query_raw_sql(query=query)
-        print(f'-----> raw SQL query -----> {raw_query}')
 
         return query.all()

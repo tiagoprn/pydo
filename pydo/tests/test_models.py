@@ -144,7 +144,6 @@ class TestUserModel:
 class TestTaskModel():
     def test_create_tasks_for_single_user_with_valid_status(self, db_session):
         tasks_uuids = create_tasks_for_single_user()
-        print(f'tasks_uuids={tasks_uuids}')
         assert len(tasks_uuids) == 2
 
         created_tasks = Task.filter_by(uuids=tasks_uuids)
@@ -163,7 +162,6 @@ class TestTaskModel():
 
     def test_update_task_successfully(self, db_session):
         tasks_uuids = create_tasks_for_single_user()
-        print(f'tasks_uuids={tasks_uuids}')
         assert len(tasks_uuids) == 2
 
         first_task = Task.filter_by(uuids=[tasks_uuids[0]])[0]
@@ -187,7 +185,6 @@ class TestTaskModel():
 
     def test_must_not_update_task_if_no_params_on_update(self, db_session):
         tasks_uuids = create_tasks_for_single_user()
-        print(f'tasks_uuids={tasks_uuids}')
         assert len(tasks_uuids) == 2
 
         first_task = Task.filter_by(uuids=[tasks_uuids[0]])[0]

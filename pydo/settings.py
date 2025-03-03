@@ -59,14 +59,15 @@ VERSION = get_app_version()
 
 SWAGGER_TEMPLATE = {
     'swagger': '2.0',
+    'uiversion': 1,
     'info': {
         'title': 'pydo',
         'description': 'A tasks management solution',
         'contact': {
-            'responsibleOrganization': 'tiagopr.nl',
+            'responsibleOrganization': 'TDS',
             'responsibleDeveloper': 'Tiago',
-            'email': 'tiago@tiagoprnl.me',
-            'url': 'https://tiagopr.nl',
+            'email': 'tdvservices@proton.me',
+            'url': 'https://writeloop.dev',
         },
         'version': VERSION,
     },
